@@ -1,4 +1,6 @@
 import re
+from functools import reduce
+from operator import mul
 
 from utils import *
 from constants import *
@@ -19,7 +21,12 @@ def day_1(part='A') -> int:
 
 
 def day_2(part='A') -> int:
-    games, truth = parse_day_2(), {'red': 12, 'green': 13, 'blue': 14}
+    games = parse_day_2()
+    return _day_2A(games) if part.upper() == 'A' else _day_2B(games)
+
+
+def _day_2A(games):
+    truth = {'red': 12, 'green': 13, 'blue': 14}
 
     def compare(marbles: dict) -> bool:
         for k, v in marbles.items():
@@ -30,7 +37,12 @@ def day_2(part='A') -> int:
     return sum(k for k, marbles in games.items() if compare(marbles))
 
 
+def _day_2B(games):
+    return sum(reduce(mul, marbles.values(), 1) for marbles in games.values())
+
+
 if __name__ == '__main__':
     print(f'{day_1()=}')
     print(f'{day_1(part="B")=}')
     print(f'{day_2()=}')
+    print(f'{day_2(part="B")=}')
