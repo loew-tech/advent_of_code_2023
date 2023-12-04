@@ -55,13 +55,11 @@ def day_3a(data: list[str]) -> int:
             if line[x] in digits:
                 val += line[x]
                 for yi, xi in directions:
-                    to_add = to_add or 0 <= y + yi < len(
-                        data) and 0 <= x + xi < len(line) and \
+                    to_add = to_add or is_in_bounds(y+yi, x+xi, data) and \
                              data[y + yi][x + xi] not in ignore
             elif val:
                 sum_ += to_add * int(val)
                 val, to_add = '', False
-
     return sum_
 
 

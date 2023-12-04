@@ -23,6 +23,10 @@ def parse_day_2() -> list[str]:
     return games
 
 
+def is_in_bounds(y: int, x: int, data: list) -> bool:
+    return 0 <= y < len(data) and 0 <= x < len(data[y])
+
+
 def day_3b_helper(data: list[str], y: int, x: int) -> int:
 
     def build_digit(y_inc, x_inc) -> (set, int):
@@ -44,9 +48,8 @@ def day_3b_helper(data: list[str], y: int, x: int) -> int:
 
     used_indices, val1, val2 = set(), 0, 0
     for yi, xi in directions:
-        if 0 <= y + yi < len(data) and 0 <= x + xi < len(data[y]) and \
-                data[y + yi][x + xi] in digits and \
-                (y + yi, x + xi) not in used_indices:
+        if is_in_bounds(y+yi, x+xi, data) and data[y + yi][x + xi] in digits \
+                and (y + yi, x + xi) not in used_indices:
             indices_, val = build_digit(yi, xi)
             val1, val2 = (val, val2) if not val1 else (val1, val)
             used_indices.update(indices_)
