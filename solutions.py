@@ -55,7 +55,7 @@ def day_3a(data: list[str]) -> int:
             if line[x] in digits:
                 val += line[x]
                 for yi, xi in directions:
-                    to_add = to_add or is_in_bounds(y+yi, x+xi, data) and \
+                    to_add = to_add or is_in_bounds(y + yi, x + xi, data) and \
                              data[y + yi][x + xi] not in ignore
             elif val:
                 sum_ += to_add * int(val)
@@ -72,6 +72,36 @@ def day_3b(data: list[str]) -> int:
     return sum_
 
 
+def day_4(part='A'):
+    data = read_input(day=4)
+    return day_4a(data) if part.upper() == 'A' else day_4b(data)
+
+
+def day_4a(data: list[str]) -> int:
+    score = 0
+    for line in data:
+        winners, mine = line[line.index(':'):].split('|')
+        winners, mine = set(winners.split()), set(mine.split())
+        num_matches = len(winners.intersection(mine))
+        score += 2 ** (num_matches - 1) if num_matches else 0
+    return score
+
+
+def day_4b(data: list[str]) -> int:
+    card_matches = []
+    counts = [1] * len(data)
+    for line in data:
+        winners, mine = line[line.index(':'):].split('|')
+        winners, mine = set(winners.split()), set(mine.split())
+        card_matches.append(len(winners.intersection(mine)))
+
+    index = -1
+    while (index := index + 1) < len(card_matches):
+        for j in range(1, card_matches[index] + 1):
+            counts[index + j] += counts[index]
+    return sum(counts)
+
+
 if __name__ == '__main__':
     print(f'{day_1()=}')
     print(f'{day_1(part="B")=}')
@@ -79,3 +109,5 @@ if __name__ == '__main__':
     print(f'{day_2(part="B")=}')
     print(f'{day_3()=}')
     print(f'{day_3(part="B")=}')
+    print(f'{day_4()=}')
+    print(f'{day_4(part="B")=}')

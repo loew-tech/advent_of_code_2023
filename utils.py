@@ -6,8 +6,7 @@ from constants import directions
 
 def read_input(day: int | str, delim='\n'):
     with open(f'inputs/day_{day}.txt') as f:
-        data = f.read().split(delim)[:-1]
-    return data
+        return f.read().split(delim)[:-1]
 
 
 def parse_day_2() -> list[str]:
@@ -29,7 +28,7 @@ def is_in_bounds(y: int, x: int, data: list) -> bool:
 
 def day_3b_helper(data: list[str], y: int, x: int) -> int:
 
-    def build_digit(y_inc, x_inc) -> (set, int):
+    def build_digit(y_inc: int, x_inc: int) -> (set, int):
         indices = {(y + y_inc, x + x_inc)}
         start_y, start_x = y + y_inc, x + x_inc
 
