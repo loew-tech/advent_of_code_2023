@@ -1,3 +1,4 @@
+import re
 from collections import defaultdict
 from string import digits
 
@@ -6,7 +7,7 @@ from constants import directions
 
 def read_input(day: int | str, delim='\n'):
     with open(f'inputs/day_{day}.txt') as f:
-        return f.read().split(delim)[:-1]
+        return f.read().rstrip().split(delim)
 
 
 def parse_day_2() -> list[str]:
@@ -53,3 +54,12 @@ def day_3b_helper(data: list[str], y: int, x: int) -> int:
             val1, val2 = (val, val2) if not val1 else (val1, val)
             used_indices.update(indices_)
     return val1 * val2
+
+
+def day_5_parse_mapping(mapping: str):
+    ranges, keys = {}, {}
+    for entry in mapping.split('\n')[1:]:
+        dest, src, range_ = (int(i) for i in entry.split(' '))
+        ranges[range(src, src+range_)] = range(dest, dest+range_)
+        keys[src] = range(src, src+range_)
+    return keys, ranges

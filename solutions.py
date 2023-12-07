@@ -1,7 +1,6 @@
-import re
+from bisect import bisect_left
 from functools import reduce
 from operator import mul
-from string import digits
 
 from utils import *
 from constants import *
@@ -102,6 +101,30 @@ def day_4b(data: list[str]) -> int:
     return sum(counts)
 
 
+def day_5(part='A') -> int:
+    data = read_input(day=5, delim='\n\n')
+    seeds = tuple(int(i) for i in data[0][data[0].index(':')+2:].split(' '))
+
+    keys, mappings = [], []
+    for mapping in data[1:]:
+        keys_dict, mapping = day_5_parse_mapping(mapping)
+        keys.append(keys_dict)
+        mappings.append(mapping)
+
+    sorted_keys, min_ = [sorted(d.keys()) for d in keys], float('inf')
+    for seed in seeds:
+        val = seed
+        for i, map_ in enumerate(mappings):
+            key_index = sorted_keys[i][bisect_left(sorted_keys[i], val)-1]
+            if len(sorted_keys) == key_index or val not in keys[i][key_index]:
+                break
+            key = keys[i][key_index]
+            offset, range_ = val - key[0], map_[key]
+            val = range_[0] + offset
+        min_ = min(min_, val)
+    return min_
+
+
 if __name__ == '__main__':
     print(f'{day_1()=}')
     print(f'{day_1(part="B")=}')
@@ -111,3 +134,4 @@ if __name__ == '__main__':
     print(f'{day_3(part="B")=}')
     print(f'{day_4()=}')
     print(f'{day_4(part="B")=}')
+    print(f'{day_5()=}')
