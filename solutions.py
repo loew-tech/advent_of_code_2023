@@ -129,20 +129,13 @@ def day_5(part='A') -> int:
 
 
 def day_6(part='A') -> int:
-    times, distances = read_input(day=6)
-    if part.upper() == 'A':
-        times = map(int, times[times.index(':')+1:].split())
-        distances = map(int, distances[distances.index(':')+1:].split())
-    else:
-        times = [int(''.join(times[times.index(':')+1:].split()))]
-        distances = [int(''.join(distances[distances.index(':')+1:].split()))]
+    times, distances = day_6_get_times_and_distances(part)
 
     prod = 1
     for t, d in zip(times, distances):
         first, last = (t-sqrt(t**2-4*d))/2, (t+sqrt(t**2-4*d))/2
         in_range = floor(last)-ceil(first) + 1
-        in_range -= (int(first) == first)
-        in_range -= (int(last) == last)
+        in_range -= ((int(first) == first) + (int(last) == last))
         prod *= in_range
     return prod
 

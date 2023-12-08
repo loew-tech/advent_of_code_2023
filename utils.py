@@ -63,3 +63,14 @@ def day_5_parse_mapping(mapping: str):
         ranges[range(src, src+range_)] = range(dest, dest+range_)
         keys[src] = range(src, src+range_)
     return keys, ranges
+
+
+def day_6_get_times_and_distances(part: str):
+    times, distances = read_input(day=6)
+    if part.upper() == 'A':
+        times = map(int, times[times.index(':')+1:].split())
+        distances = map(int, distances[distances.index(':')+1:].split())
+    else:
+        times = [int(''.join(times[times.index(':')+1:].split()))]
+        distances = [int(''.join(distances[distances.index(':')+1:].split()))]
+    return times, distances
