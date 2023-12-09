@@ -1,7 +1,11 @@
-number_words = ['one', 'two', 'three', 'four', 'five', 'six', 'seven',
+NUMBER_WORDS = ['one', 'two', 'three', 'four', 'five', 'six', 'seven',
                 'eight', 'nine']
 
-word_to_digit = dict(zip(number_words, range(1, 10)))
+WORD_TO_DIGIT = dict(zip(NUMBER_WORDS, range(1, 10)))
 
-directions = tuple((i, j) for i in range(-1, 2)
+DIRECTIONS = tuple((i, j) for i in range(-1, 2)
                    for j in range(-1, 2) if not i == j == 0)
+
+
+CARD_FACES = "AKQJT98765432"
+CARD_FACE_VALS = dict(zip(CARD_FACES, range(6, len(CARD_FACES)+6)))

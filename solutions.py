@@ -2,6 +2,7 @@ from bisect import bisect_left
 from functools import reduce
 from math import sqrt, floor, ceil
 from operator import mul
+import re
 
 from utils import *
 from constants import *
@@ -9,10 +10,10 @@ from constants import *
 
 def day_1(part='A') -> int:
     pattern = r'\d' if part.upper() == 'A' else '(?=(' + '|'.join(
-        [r'\d', *number_words]) + '))'
+        [r'\d', *NUMBER_WORDS]) + '))'
 
     conversion_dict = {
-        **word_to_digit,
+        **WORD_TO_DIGIT,
         **dict(zip((str(i) for i in range(1, 10)), range(1, 10)))
     }
 
@@ -54,7 +55,7 @@ def day_3a(data: list[str]) -> int:
         while (x := x + 1) < len(line):
             if line[x] in digits:
                 val += line[x]
-                for yi, xi in directions:
+                for yi, xi in DIRECTIONS:
                     to_add = to_add or is_in_bounds(y + yi, x + xi, data) and \
                              data[y + yi][x + xi] not in ignore
             elif val:
@@ -140,6 +141,11 @@ def day_6(part='A') -> int:
     return prod
 
 
+def day_7(part='A') -> int:
+    hands = evaluate_hands(tuple(hand.split() for hand in read_input(day=7)))
+    return sum(i*v.bid for i, v in enumerate(hands, start=1))
+
+
 if __name__ == '__main__':
     print(f'{day_1()=}')
     print(f'{day_1(part="B")=}')
@@ -153,3 +159,5 @@ if __name__ == '__main__':
     print(f'{day_5(part="B")=}')
     print(f'{day_6()=}')
     print(f'{day_6(part="B")=}')
+    print(f'{day_7()=}')
+    # print(f'{day_7(part="B")=}')
