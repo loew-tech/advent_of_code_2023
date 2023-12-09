@@ -142,7 +142,7 @@ def day_6(part='A') -> int:
 
 
 def day_7(part='A') -> int:
-    hands = evaluate_hands(tuple(hand.split() for hand in read_input(day=7)))
+    hands = evaluate_hands(tuple(hand.split() for hand in read_input(day=7)), part)
     return sum(i*v.bid for i, v in enumerate(hands, start=1))
 
 
@@ -160,4 +160,4 @@ if __name__ == '__main__':
     print(f'{day_6()=}')
     print(f'{day_6(part="B")=}')
     print(f'{day_7()=}')
-    # print(f'{day_7(part="B")=}')
+    print(f'{day_7(part="B")=}')

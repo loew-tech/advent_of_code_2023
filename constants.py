@@ -9,3 +9,4 @@ DIRECTIONS = tuple((i, j) for i in range(-1, 2)
 
 CARD_FACES = "AKQJT98765432"
 CARD_FACE_VALS = dict(zip(CARD_FACES, range(6, len(CARD_FACES)+6)))
+WILDCARD_FACE_VALS = {**CARD_FACE_VALS, 'J': len(CARD_FACES)+7}

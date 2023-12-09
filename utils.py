@@ -2,7 +2,7 @@ from collections import defaultdict, Counter, namedtuple
 from string import digits
 from typing import Tuple, Any
 
-from constants import DIRECTIONS, CARD_FACE_VALS
+from constants import DIRECTIONS, CARD_FACE_VALS, WILDCARD_FACE_VALS
 
 Hand = namedtuple('Hand', ['type', 'cards', 'bid'])
 
@@ -40,8 +40,7 @@ def day_3b_helper(data: list[str], y: int, x: int) -> int:
             indices.add((start_y, x_left))
             val_ = data[start_y][x_left] + val_
             x_left -= 1
-        while x_right < len(data[start_y]) and data[start_y][
-            x_right] in digits:
+        while x_right < len(data[start_y]) and data[start_y][x_right] in digits:
             indices.add((start_y, x_right))
             val_ += data[start_y][x_right]
             x_right += 1
@@ -80,42 +79,43 @@ def day_6_get_times_and_distances(part: str) -> Tuple[list, list]:
     return times, distances
 
 
-def evaluate_hands(input_: list[list[str]]) -> list[Hand]:
+def evaluate_hands(input_: list[Tuple[str, ...]], part='A') -> list[Hand]:
+    _input_to_hand = _get_input_to_hand(part)
+    face_vals = CARD_FACE_VALS if part.upper() == 'A' else WILDCARD_FACE_VALS
     return sorted(map(_input_to_hand, input_),
-                  key=lambda h: (h.type, tuple(CARD_FACE_VALS[c] for c in
+                  key=lambda h: (h.type, tuple(face_vals[c] for c in
                                                h.cards)),
                   reverse=True)
 
 
-def _input_to_hand(hand: Tuple[str, ...]) -> Hand:
-    cards, bid = hand
-    return Hand(type=(_get_hand_type(cards)), cards=cards, bid=int(bid))
+def _get_input_to_hand(part: str):
+    def _input_to_hand(hand: Tuple[str, ...]) -> Hand:
+        cards, bid = hand
+        return Hand(type=(_get_hand_type(cards, part)), cards=cards,
+                    bid=int(bid))
+
+    return _input_to_hand
 
 
-def _get_hand_type(cards: str) -> int:
+def _get_hand_type(cards: str, part: str) -> int:
+    wild_cards_offset = cards.count('J') * (not part.upper() == 'A')
+    if not part.upper() == 'A':
+        cards = cards.replace('J', '')
+
     counts = sorted((count for count in Counter(cards).values()),
                     key=lambda x: -x)
-    if counts[0] == 5:
+
+    if wild_cards_offset == 5 or counts[0] + wild_cards_offset == 5:
         return 0
-    elif counts[0] == 4:
+    elif counts[0] + wild_cards_offset == 4:
         return 1
-    elif counts[0] == 3 and counts[1] == 2:
+    elif counts[0] + wild_cards_offset == 3 and counts[1] == 2:
         return 2
-    elif counts[0] == 3:
+    elif counts[0] + wild_cards_offset == 3:
         return 3
-    if counts[0] == counts[1] == 2:
+    if counts[0] == 2 and counts[1] + wild_cards_offset == 2:
         return 4
-    elif counts[0] == 2:
+    elif counts[0] + wild_cards_offset == 2:
         return 5
     else:
         return 6
-
-
-def _sort_hands(hand: Hand) -> Tuple[Any, tuple[int, ...]]:
-    return hand.rank, tuple(CARD_FACE_VALS[c] for c in hand.cards)
-
-
-if __name__ == '__main__':
-    tests = ['32T3K', 'T55J5', 'KK677', 'KTJJT', 'QQQJA', '12J34']
-    for t in tests:
-        print(f'{t=} {_get_hand_type(t)=}')
