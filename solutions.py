@@ -142,8 +142,18 @@ def day_6(part='A') -> int:
 
 
 def day_7(part='A') -> int:
-    hands = evaluate_hands(tuple(hand.split() for hand in read_input(day=7)), part)
+    hands = evaluate_hands(tuple(hand.split() for hand in read_input(day=7)),
+                           part)
     return sum(i*v.bid for i, v in enumerate(hands, start=1))
+
+
+def day_8(part='A'):
+    sequence, mapping = day_8_parse_input()
+    count, key = 0, 'AAA'
+    while count := count+1:
+        key = mapping[key][sequence[(count-1) % len(sequence)]]
+        if key == 'ZZZ':
+            return count
 
 
 if __name__ == '__main__':
@@ -161,3 +171,4 @@ if __name__ == '__main__':
     print(f'{day_6(part="B")=}')
     print(f'{day_7()=}')
     print(f'{day_7(part="B")=}')
+    print(f'{day_8()=}')

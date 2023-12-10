@@ -99,8 +99,7 @@ def _get_input_to_hand(part: str):
 
 def _get_hand_type(cards: str, part: str) -> int:
     wild_cards_offset = cards.count('J') * (not part.upper() == 'A')
-    if not part.upper() == 'A':
-        cards = cards.replace('J', '')
+    cards = cards if part.upper() == 'A' else cards.replace('J', '')
 
     counts = sorted((count for count in Counter(cards).values()),
                     key=lambda x: -x)
@@ -119,3 +118,11 @@ def _get_hand_type(cards: str, part: str) -> int:
         return 5
     else:
         return 6
+
+
+def day_8_parse_input():
+    def _to_lr_dict(m: str):
+        l, r = m[m.index('(')+1: m.index(')')].split(', ')
+        return {'L': l, 'R': r}
+    sequence, mapping = read_input(day=8, delim='\n\n')
+    return sequence, {m[:m.index(' =')]: _to_lr_dict(m) for m in mapping.split('\n')}
