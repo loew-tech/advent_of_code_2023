@@ -1,6 +1,6 @@
 from collections import defaultdict, Counter, namedtuple
 from string import digits
-from typing import Tuple, Any
+from typing import Tuple, Any, Callable
 
 from constants import DIRECTIONS, CARD_FACE_VALS, WILDCARD_FACE_VALS
 
@@ -40,7 +40,8 @@ def day_3b_helper(data: list[str], y: int, x: int) -> int:
             indices.add((start_y, x_left))
             val_ = data[start_y][x_left] + val_
             x_left -= 1
-        while x_right < len(data[start_y]) and data[start_y][x_right] in digits:
+        while x_right < len(data[start_y]) and data[start_y][
+            x_right] in digits:
             indices.add((start_y, x_right))
             val_ += data[start_y][x_right]
             x_right += 1
@@ -79,7 +80,7 @@ def day_6_get_times_and_distances(part: str) -> Tuple[list, list]:
     return times, distances
 
 
-def evaluate_hands(input_: list[Tuple[str, ...]], part='A') -> list[Hand]:
+def evaluate_hands(input_: Tuple[list[str], ...], part='A') -> list[Hand]:
     _input_to_hand = _get_input_to_hand(part)
     face_vals = CARD_FACE_VALS if part.upper() == 'A' else WILDCARD_FACE_VALS
     return sorted(map(_input_to_hand, input_),
@@ -88,7 +89,7 @@ def evaluate_hands(input_: list[Tuple[str, ...]], part='A') -> list[Hand]:
                   reverse=True)
 
 
-def _get_input_to_hand(part: str):
+def _get_input_to_hand(part: str) -> Callable[[Tuple[str, ...]], Hand]:
     def _input_to_hand(hand: Tuple[str, ...]) -> Hand:
         cards, bid = hand
         return Hand(type=(_get_hand_type(cards, part)), cards=cards,
@@ -120,9 +121,26 @@ def _get_hand_type(cards: str, part: str) -> int:
         return 6
 
 
-def day_8_parse_input():
-    def _to_lr_dict(m: str):
-        l, r = m[m.index('(')+1: m.index(')')].split(', ')
+def day_8_parse_input() -> Tuple[str, dict]:
+    def _to_lr_dict(m: str) -> dict:
+        l, r = m[m.index('(') + 1: m.index(')')].split(', ')
         return {'L': l, 'R': r}
+
     sequence, mapping = read_input(day=8, delim='\n\n')
-    return sequence, {m[:m.index(' =')]: _to_lr_dict(m) for m in mapping.split('\n')}
+    mapping = {m[:m.index(' =')]: _to_lr_dict(m) for m in mapping.split('\n')}
+    return sequence, mapping
+
+
+def get_day_8_step_counter(
+        sequence: str,
+        mapping: dict,
+        part: str) -> Callable[[str], int]:
+
+    def count_steps(key: str) -> int:
+        count = 0
+        while count := count + 1:
+            key = mapping[key][sequence[(count - 1) % len(sequence)]]
+            if key == 'ZZZ' if part.lower() == 'A' else key[-1] == 'Z':
+                return count
+
+    return count_steps

@@ -1,6 +1,6 @@
 from bisect import bisect_left
 from functools import reduce
-from math import sqrt, floor, ceil
+from math import ceil, floor, sqrt, lcm
 from operator import mul
 import re
 
@@ -107,7 +107,7 @@ def day_5(part='A') -> int:
     if not part.upper() == 'A':
         return NotImplemented
     data = read_input(day=5, delim='\n\n')
-    seeds = tuple(int(i) for i in data[0][data[0].index(':')+2:].split(' '))
+    seeds = tuple(int(i) for i in data[0][data[0].index(':') + 2:].split(' '))
 
     keys, mappings = [], []
     for mapping in data[1:]:
@@ -119,7 +119,7 @@ def day_5(part='A') -> int:
     for seed in seeds:
         val = seed
         for i, map_ in enumerate(mappings):
-            key_index = sorted_keys[i][bisect_left(sorted_keys[i], val)-1]
+            key_index = sorted_keys[i][bisect_left(sorted_keys[i], val) - 1]
             if len(sorted_keys) == key_index or val not in keys[i][key_index]:
                 break
             key = keys[i][key_index]
@@ -134,8 +134,9 @@ def day_6(part='A') -> int:
 
     prod = 1
     for t, d in zip(times, distances):
-        first, last = (t-sqrt(t**2-4*d))/2, (t+sqrt(t**2-4*d))/2
-        in_range = floor(last)-ceil(first) + 1
+        first, last = (t - sqrt(t ** 2 - 4 * d)) / 2, (
+                    t + sqrt(t ** 2 - 4 * d)) / 2
+        in_range = floor(last) - ceil(first) + 1
         in_range -= ((int(first) == first) + (int(last) == last))
         prod *= in_range
     return prod
@@ -144,16 +145,37 @@ def day_6(part='A') -> int:
 def day_7(part='A') -> int:
     hands = evaluate_hands(tuple(hand.split() for hand in read_input(day=7)),
                            part)
-    return sum(i*v.bid for i, v in enumerate(hands, start=1))
+    return sum(i * v.bid for i, v in enumerate(hands, start=1))
 
 
 def day_8(part='A'):
     sequence, mapping = day_8_parse_input()
+    step_counter = get_day_8_step_counter(sequence, mapping, part)
+    keys = {'AAA'} if part.upper() == 'A' else \
+        {k for k in mapping.keys() if k[-1] == 'Z'}
+    return lcm(*(step_counter(k) for k in keys))
+
+
+def day_8a(sequence: str, mapping: dict) -> int:
     count, key = 0, 'AAA'
-    while count := count+1:
-        key = mapping[key][sequence[(count-1) % len(sequence)]]
+    while count := count + 1:
+        key = mapping[key][sequence[(count - 1) % len(sequence)]]
         if key == 'ZZZ':
             return count
+
+
+def day_8b(sequence: str, mapping: dict) -> int:
+    return NotImplemented
+    # sequence, mapping = day_8_parse_input()
+    # end_pts = {k for k in mapping.keys() if k[-1] == 'Z'}
+    # count, keys = 0, [k for k in mapping.keys() if k[-1] == 'A']
+    #
+    # while count := count + 1:
+    #     direction = sequence[(count+1) % len(sequence)]
+    #     reached_z = True
+    #     new_keys = []
+    #     for k in keys:
+    #         new_k = mapping[k][]
 
 
 if __name__ == '__main__':
@@ -172,3 +194,4 @@ if __name__ == '__main__':
     print(f'{day_7()=}')
     print(f'{day_7(part="B")=}')
     print(f'{day_8()=}')
+    print(f'{day_8(part="B")=}')
