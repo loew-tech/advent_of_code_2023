@@ -1,6 +1,6 @@
 from collections import defaultdict, Counter, namedtuple
 from string import digits
-from typing import Tuple, Any, Callable
+from typing import Tuple, Callable, Generator
 
 from constants import DIRECTIONS, CARD_FACE_VALS, WILDCARD_FACE_VALS
 
@@ -144,3 +144,20 @@ def get_day_8_step_counter(
                 return count
 
     return count_steps
+
+
+def get_next_history(history: list[int]) -> int:
+    last_digits = list(_get_last_vals(history))
+    last_val = last_digits.pop()
+    while 1 < len(last_digits):
+        last_val = last_digits.pop() + last_val
+    return last_val + last_digits[-1]
+
+
+def _get_last_vals(history: list[int]) -> Generator:
+    differences = history
+    while not len(set(differences)) == 1:
+        yield differences[-1]
+        differences = tuple(v-differences[i] for i, v in
+                            enumerate(differences[1:]))
+    yield differences[-1]

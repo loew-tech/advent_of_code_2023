@@ -148,7 +148,7 @@ def day_7(part='A') -> int:
     return sum(i * v.bid for i, v in enumerate(hands, start=1))
 
 
-def day_8(part='A'):
+def day_8(part='A') -> int:
     sequence, mapping = day_8_parse_input()
     step_counter = get_day_8_step_counter(sequence, mapping, part)
     keys = {'AAA'} if part.upper() == 'A' else \
@@ -156,26 +156,9 @@ def day_8(part='A'):
     return lcm(*(step_counter(k) for k in keys))
 
 
-def day_8a(sequence: str, mapping: dict) -> int:
-    count, key = 0, 'AAA'
-    while count := count + 1:
-        key = mapping[key][sequence[(count - 1) % len(sequence)]]
-        if key == 'ZZZ':
-            return count
-
-
-def day_8b(sequence: str, mapping: dict) -> int:
-    return NotImplemented
-    # sequence, mapping = day_8_parse_input()
-    # end_pts = {k for k in mapping.keys() if k[-1] == 'Z'}
-    # count, keys = 0, [k for k in mapping.keys() if k[-1] == 'A']
-    #
-    # while count := count + 1:
-    #     direction = sequence[(count+1) % len(sequence)]
-    #     reached_z = True
-    #     new_keys = []
-    #     for k in keys:
-    #         new_k = mapping[k][]
+def day_9(part='A') -> int:
+    histories = [[int(i) for i in h.split()] for h in read_input(day=9)]
+    return sum(get_next_history(h) for h in histories)
 
 
 if __name__ == '__main__':
@@ -195,3 +178,4 @@ if __name__ == '__main__':
     print(f'{day_7(part="B")=}')
     print(f'{day_8()=}')
     print(f'{day_8(part="B")=}')
+    print(f'{day_9()=}')
