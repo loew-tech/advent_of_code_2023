@@ -73,7 +73,7 @@ def day_3b(data: list[str]) -> int:
     return sum_
 
 
-def day_4(part='A'):
+def day_4(part='A') -> int:
     data = read_input(day=4)
     return day_4a(data) if part.upper() == 'A' else day_4b(data)
 
@@ -163,6 +163,10 @@ def day_9(part='A') -> int:
     return sum(get_next_history(h) for h in histories)
 
 
+def day_10(part='A') -> int:
+    return traverse_pipes(read_input(day=10))
+
+
 if __name__ == '__main__':
     print(f'{day_1()=}')
     print(f'{day_1(part="B")=}')
@@ -182,3 +186,4 @@ if __name__ == '__main__':
     print(f'{day_8(part="B")=}')
     print(f'{day_9()=}')
     print(f'{day_9(part="B")=}')
+    print(f'{day_10()=}')

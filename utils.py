@@ -1,7 +1,8 @@
 from collections import defaultdict, Counter, namedtuple
 from string import digits
-from typing import Tuple, Callable, Generator, Any
+from typing import Tuple, Callable, Any, Generator
 
+from classes import Searcher
 from constants import *
 
 Hand = namedtuple('Hand', ['type', 'cards', 'bid'])
@@ -40,8 +41,7 @@ def day_3b_helper(data: list[str], y, x: int) -> int:
             indices.add((start_y, x_left))
             val_ = data[start_y][x_left] + val_
             x_left -= 1
-        while x_right < len(data[start_y]) and data[start_y][
-            x_right] in digits:
+        while x_right < len(data[start_y]) and data[start_y][x_right] in digits:
             indices.add((start_y, x_right))
             val_ += data[start_y][x_right]
             x_right += 1
@@ -152,3 +152,35 @@ def get_next_history(history: list[int]) -> int:
         sum_ += diffs[-1]
         diffs = tuple(v - diffs[i] for i, v in enumerate(diffs[1:]))
     return sum_ + diffs[-1]
+
+
+def traverse_pipes(pipes: list[str]) -> int:
+    sy, sx = _find_start(pipes, 'S')
+    searches = [Searcher(*start) for start in _get_first_move(pipes, sy, sx)]
+    observed, positions = {(sy, sx)}, {s.location for s in searches}
+    while not observed.issuperset(positions):
+        observed.update(positions)
+        for s in searches:
+            new_y, new_x = s.next_location
+            s.current_val = pipes[new_y][new_x]
+        positions = {s.location for s in searches}
+    return len(observed) // 2
+
+
+def _find_start(grid: list[Any] | Tuple[Any], target: Any) -> Tuple[int, int]:
+    for y, row in enumerate(grid):
+        for x, val in enumerate(row):
+            if val == target:
+                return y, x
+    raise Exception(f'Err searching for target: {target} not found in grid')
+
+
+def _get_first_move(pipes: list[str], ys, xs: int) -> Generator:
+    if ys+1 < len(pipes) and pipes[ys+1][xs] in '|JL':
+        yield ys+1, xs, 1, 0, pipes[ys+1][xs]
+    if 0 <= ys-1 and pipes[ys-1][xs] in '|7F':
+        yield ys-1, xs, -1, 0, pipes[ys-1][xs]
+    if xs+1 < len(pipes[ys]) and pipes[ys][xs+1] in '-J7':
+        yield ys, xs+1, 0, 1, pipes[ys][xs+1]
+    if 0 <= xs-1 and pipes[ys][xs-1] in '-FL':
+        yield ys, xs-1, 0, -1, pipes[ys][xs-1]
