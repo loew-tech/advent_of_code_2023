@@ -158,6 +158,8 @@ def day_8(part='A') -> int:
 
 def day_9(part='A') -> int:
     histories = [[int(i) for i in h.split()] for h in read_input(day=9)]
+    if not part.upper() == 'A':
+        histories = [h[::-1] for h in histories]
     return sum(get_next_history(h) for h in histories)
 
 
@@ -179,3 +181,4 @@ if __name__ == '__main__':
     print(f'{day_8()=}')
     print(f'{day_8(part="B")=}')
     print(f'{day_9()=}')
+    print(f'{day_9(part="B")=}')
