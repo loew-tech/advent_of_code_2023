@@ -1,8 +1,8 @@
 from collections import defaultdict, Counter, namedtuple
 from string import digits
-from typing import Tuple, Callable, Generator
+from typing import Tuple, Callable, Generator, Any
 
-from constants import DIRECTIONS, CARD_FACE_VALS, WILDCARD_FACE_VALS
+from constants import *
 
 Hand = namedtuple('Hand', ['type', 'cards', 'bid'])
 
@@ -25,12 +25,12 @@ def parse_day_2() -> list[str]:
     return games
 
 
-def is_in_bounds(y: int, x: int, data: list) -> bool:
+def is_in_bounds(y, x: int, data: list) -> bool:
     return 0 <= y < len(data) and 0 <= x < len(data[y])
 
 
-def day_3b_helper(data: list[str], y: int, x: int) -> int:
-    def build_digit(y_inc: int, x_inc: int) -> Tuple[set, int]:
+def day_3b_helper(data: list[str], y, x: int) -> int:
+    def build_digit(y_inc, x_inc: int) -> Tuple[set, int]:
         indices = {(y + y_inc, x + x_inc)}
         start_y, start_x = y + y_inc, x + x_inc
 
@@ -147,17 +147,8 @@ def get_day_8_step_counter(
 
 
 def get_next_history(history: list[int]) -> int:
-    last_digits = list(_get_last_vals(history))
-    last_val = last_digits.pop()
-    while 1 < len(last_digits):
-        last_val = last_digits.pop() + last_val
-    return last_val + last_digits[-1]
-
-
-def _get_last_vals(history: list[int]) -> Generator:
-    differences = history
-    while not len(set(differences)) == 1:
-        yield differences[-1]
-        differences = tuple(v-differences[i] for i, v in
-                            enumerate(differences[1:]))
-    yield differences[-1]
+    sum_, diffs = 0, history
+    while not len(set(diffs)) == 1:
+        sum_ += diffs[-1]
+        diffs = tuple(v - diffs[i] for i, v in enumerate(diffs[1:]))
+    return sum_ + diffs[-1]
