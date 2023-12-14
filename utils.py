@@ -1,6 +1,6 @@
 from collections import defaultdict, Counter, namedtuple
 from string import digits
-from typing import Tuple, Callable, Any, Generator
+from typing import Tuple, Callable, Any, Generator, DefaultDict
 
 from classes import Searcher
 from constants import *
@@ -13,7 +13,7 @@ def read_input(day: int | str, delim='\n') -> list[str]:
         return f.read().rstrip().split(delim)
 
 
-def parse_day_2() -> list[str]:
+def parse_day_2() -> DefaultDict[int, DefaultDict[str, int]]:
     data, games = read_input(day=2), defaultdict(lambda: defaultdict(int))
     for line in data:
         game, marbles = line.split(':')
@@ -50,8 +50,7 @@ def day_3b_helper(data: list[str], y, x: int) -> int:
 
     used_indices, val1, val2 = set(), 0, 0
     for yi, xi in DIRECTIONS:
-        if is_in_bounds(y + yi, x + xi, data) and data[y + yi][
-            x + xi] in digits \
+        if is_in_bounds(y + yi, x + xi, data) and data[y + yi][x + xi] in digits \
                 and (y + yi, x + xi) not in used_indices:
             indices_, val = build_digit(yi, xi)
             val1, val2 = (val, val2) if not val1 else (val1, val)

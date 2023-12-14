@@ -164,7 +164,13 @@ def day_9(part='A') -> int:
 
 
 def day_10(part='A') -> int:
-    return traverse_pipes(read_input(day=10))
+    if part.upper() == 'A':
+        return traverse_pipes(read_input(day=10))
+    return NotImplemented
+
+
+def day_11(part='A'):
+    return NotImplemented
 
 
 if __name__ == '__main__':
@@ -187,3 +193,5 @@ if __name__ == '__main__':
     print(f'{day_9()=}')
     print(f'{day_9(part="B")=}')
     print(f'{day_10()=}')
+    print(f'{day_10(part="B")=}')
+    print(f'{day_11()=}')
