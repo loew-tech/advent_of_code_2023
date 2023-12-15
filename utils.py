@@ -1,6 +1,7 @@
 from collections import defaultdict, Counter, namedtuple
 from string import digits
-from typing import Tuple, Callable, Any, Generator, DefaultDict
+from typing import Tuple, Callable, Any, Generator, DefaultDict, Set, Iterable, \
+    List
 
 from classes import Searcher
 from constants import *
@@ -26,7 +27,11 @@ def parse_day_2() -> DefaultDict[int, DefaultDict[str, int]]:
     return games
 
 
-def is_in_bounds(y, x: int, data: list) -> bool:
+def get_is_in_bounds(data: List[Iterable]) -> Callable[[int, int], bool]:
+    return lambda y, x: is_in_bounds(y, x, data)
+
+
+def is_in_bounds(y, x: int, data: List[Iterable]) -> bool:
     return 0 <= y < len(data) and 0 <= x < len(data[y])
 
 
@@ -35,8 +40,7 @@ def day_3b_helper(data: list[str], y, x: int) -> int:
         indices = {(y + y_inc, x + x_inc)}
         start_y, start_x = y + y_inc, x + x_inc
 
-        x_left, x_right, val_ = start_x - 1, start_x + 1, data[start_y][
-            start_x]
+        x_left, x_right, val_ = start_x - 1, start_x + 1, data[start_y][start_x]
         while 0 <= x_left and data[start_y][x_left] in digits:
             indices.add((start_y, x_left))
             val_ = data[start_y][x_left] + val_
@@ -153,17 +157,17 @@ def get_next_history(history: list[int]) -> int:
     return sum_ + diffs[-1]
 
 
-def traverse_pipes(pipes: list[str]) -> int:
+def get_loop_perimeter(pipes: list[str]) -> Set[Tuple[int, int]]:
     sy, sx = _find_start(pipes, 'S')
     searches = [Searcher(*start) for start in _get_first_move(pipes, sy, sx)]
-    observed, positions = {(sy, sx)}, {s.location for s in searches}
-    while not observed.issuperset(positions):
-        observed.update(positions)
+    perimeter, positions = {(sy, sx)}, {s.location for s in searches}
+    while not perimeter.issuperset(positions):
+        perimeter.update(positions)
         for s in searches:
             new_y, new_x = s.next_location
             s.current_val = pipes[new_y][new_x]
         positions = {s.location for s in searches}
-    return len(observed) // 2
+    return perimeter
 
 
 def _find_start(grid: list[Any] | Tuple[Any], target: Any) -> Tuple[int, int]:
@@ -183,3 +187,42 @@ def _get_first_move(pipes: list[str], ys, xs: int) -> Generator:
         yield ys, xs+1, 0, 1, pipes[ys][xs+1]
     if 0 <= xs-1 and pipes[ys][xs-1] in '-FL':
         yield ys, xs-1, 0, -1, pipes[ys][xs-1]
+
+
+def bfs(grid: list[list[any] | str], to_search: Iterable[Tuple[int, int]],
+        increments=CARDINAL_DIRECTIONS, visited=None, in_bounds=None) -> set:
+    visited = visited if visited is not None else set()
+    in_bounds = in_bounds if in_bounds is not None else get_is_in_bounds(grid)
+
+
+    copy = [[v for v in r] for r in grid]
+    _print_pipes(copy)
+
+    for y, x in visited:
+        copy[y][x] = '*'
+
+    for y, x in to_search:
+        copy[y][x] = 'O'
+
+    while to_search:
+        print(f'{len(to_search)=} {to_search=}')
+        _print_pipes(copy)
+        visited.update(to_search)
+        next_search = set()
+        for y, x in to_search:
+            for yi, xi in increments:
+                if (y+yi, x+xi) not in visited and in_bounds(y+yi, x+xi):
+                    next_search.add((y+yi, x+xi))
+                    copy[y+yi][x+xi] = 'O'
+        to_search = next_search
+
+    _print_pipes(copy)
+    return visited
+
+
+def _print_pipes(p):
+    for line in p:
+        print(''.join(line))
+    print('\n***********\n')
+
+

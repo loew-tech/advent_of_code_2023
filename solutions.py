@@ -134,8 +134,7 @@ def day_6(part='A') -> int:
 
     prod = 1
     for t, d in zip(times, distances):
-        first, last = (t - sqrt(t ** 2 - 4 * d)) / 2, (
-                    t + sqrt(t ** 2 - 4 * d)) / 2
+        first, last = (t-sqrt(t**2 - 4*d))/2, (t+sqrt(t**2-4*d))/2
         in_range = floor(last) - ceil(first) + 1
         in_range -= ((int(first) == first) + (int(last) == last))
         prod *= in_range
@@ -164,10 +163,38 @@ def day_9(part='A') -> int:
 
 
 def day_10(part='A') -> int:
+    pipes = read_input(day=10)
+    perim = get_loop_perimeter(pipes)
     if part.upper() == 'A':
-        return traverse_pipes(read_input(day=10))
-    return NotImplemented
+        return len(perim) // 2
+    return day_10b(pipes, perim)
 
+
+def day_10b(pipes: list[str], not_enclosed: Set[Tuple[int, int]]) -> int:
+    max_y, min_y = max(not_enclosed)[0], min(not_enclosed)[0]
+    max_x, min_x = max(x for _, x in not_enclosed), min(x for _, x in not_enclosed)
+    top_to_right = {(max_y, x) for x in range(min_x, max_x+1)}
+    print(f'{top_to_right=} {pipes[max_y][min_x]=} {pipes[max_y][max_x]=}')
+    bottom_to_right = {(min_y, x) for x in range(min_x, max_x+1)}
+    left_to_down = {(y, min_x) for y in range(min_y, max_y+1)}
+    right_to_down = {(y, max_x) for y in range(min_y, max_y+1)}
+    to_search = {*top_to_right, *bottom_to_right,
+                 *left_to_down, *right_to_down} - not_enclosed
+    print(f'\n{"*"*10}\n')
+    print(f'{len(not_enclosed)=} {max_y=} {max_x=} {min_y=} {min_x=}')
+    bfs(pipes, visited=not_enclosed, to_search=to_search,
+        in_bounds=lambda y, x: min_x <= x <= max_x and min_y <= y <= max_y)
+    area = (1+max_y-min_y) * (1+max_x - min_x)
+    print(f'{len(not_enclosed)=} {area=}')
+    print(f'\n{"*" * 10}\n')
+
+    sum_ = 0
+    for y in range(min_y, max_y+1):
+        for x in range(min_x, max_x+1):
+            sum_ += pipes[y][x] == '.' and (y, x) not in not_enclosed
+
+    return sum_
+# 69, 94 is not right
 
 def day_11(part='A'):
     return NotImplemented
