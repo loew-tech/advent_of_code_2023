@@ -220,9 +220,29 @@ def bfs(grid: list[list[any] | str], to_search: Iterable[Tuple[int, int]],
     return visited
 
 
+def check_enclosure(perim, enclosed: Set[Tuple[int, int]]):
+    max_y, min_y = max(perim)[0], min(perim)[0]
+    max_x, min_x = max(x for _, x in perim), min(x for _, x in perim)
+
+    print(f'{len(enclosed)=}')
+
+    for y, x in enclosed.copy():
+        s0 = {(yi, x) for yi in range(min_y, max_y+1)}
+        s1 = {(y, xi) for xi in range(min_x, max_x+1)}
+        i0, i1 = perim.intersection(s0), perim.intersection(s1)
+        if len(i0) % 2 == len(i1) % 2 == 1:
+            enclosed.remove((y, x))
+
+    return len(enclosed)
+
+
+# @TODO: delete this
 def _print_pipes(p):
     for line in p:
         print(''.join(line))
     print('\n***********\n')
 
 
+if __name__ == '__main__':
+    s1 = set(map(tuple, zip(range(5), range(5, 10))))
+    check_enclosure({(1, 2), (3, 4)}, s1)
