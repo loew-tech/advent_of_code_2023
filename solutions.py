@@ -169,23 +169,13 @@ def day_10(part='A') -> int:
 
     if part.upper() == 'A':
         return len(perim) // 2
-
-    sum_ = 0
-    for y, row in enumerate(pipes):
-        for x, v in enumerate(row):
-            if (y, x) in perim:
-                continue
-            y2, x2, cross_count = y, x, 0
-            while is_in_bounds(y2, x2, pipes):
-                cross_count += (y2, x2) in perim and pipes[y2][x2] not in 'L7'
-                y2 += 1
-                x2 += 1
-            sum_ += cross_count % 2
-    return sum_
+    is_enclosed = get_is_enclosed(perim, pipes)
+    return sum(is_enclosed(y, x) for y in range(len(pipes))
+               for x in range(len(pipes[y])))
 
 
 def day_11(part='A'):
-    return NotImplemented
+    return get_galaxies_distance(read_input(day=11))
 
 
 if __name__ == '__main__':

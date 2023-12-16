@@ -83,7 +83,7 @@ def day_6_get_times_and_distances(part: str) -> Tuple[list, list]:
     return times, distances
 
 
-def evaluate_hands(input_: Tuple[list[str], ...], part='A') -> list[Hand]:
+def evaluate_hands(input_: Tuple[Any, ...], part='A') -> list[Hand]:
     _input_to_hand = _get_input_to_hand(part)
     face_vals = CARD_FACE_VALS if part.upper() == 'A' else WILDCARD_FACE_VALS
     return sorted(map(_input_to_hand, input_),
@@ -97,7 +97,6 @@ def _get_input_to_hand(part: str) -> Callable[[Tuple[str, ...]], Hand]:
         cards, bid = hand
         return Hand(type=(_get_hand_type(cards, part)), cards=cards,
                     bid=int(bid))
-
     return _input_to_hand
 
 
@@ -189,60 +188,41 @@ def _get_first_move(pipes: list[str], ys, xs: int) -> Generator:
         yield ys, xs-1, 0, -1, pipes[ys][xs-1]
 
 
-def bfs(grid: list[list[any] | str], to_search: Iterable[Tuple[int, int]],
-        increments=CARDINAL_DIRECTIONS, visited=None, in_bounds=None) -> set:
-    visited = visited if visited is not None else set()
-    in_bounds = in_bounds if in_bounds is not None else get_is_in_bounds(grid)
+def get_is_enclosed(perim: Set[Tuple[int, int]], pipes: list[str]):
+    def is_enclosed(x, y: int):
+        if (y, x) in perim:
+            return 0
+        y2, x2, cross_count = y, x, 0
+        while is_in_bounds(y2, x2, pipes):
+            cross_count += (y2, x2) in perim and pipes[y2][x2] not in 'L7'
+            y2 += 1
+            x2 += 1
+        return cross_count % 2
+    return is_enclosed
 
 
-    copy = [[v for v in r] for r in grid]
-    _print_pipes(copy)
-
-    for y, x in visited:
-        copy[y][x] = '*'
-
-    for y, x in to_search:
-        copy[y][x] = 'O'
-
-    while to_search:
-        print(f'{len(to_search)=} {to_search=}')
-        _print_pipes(copy)
-        visited.update(to_search)
-        next_search = set()
-        for y, x in to_search:
-            for yi, xi in increments:
-                if (y+yi, x+xi) not in visited and in_bounds(y+yi, x+xi):
-                    next_search.add((y+yi, x+xi))
-                    copy[y+yi][x+xi] = 'O'
-        to_search = next_search
-
-    _print_pipes(copy)
-    return visited
+def get_galaxies_distance(sky: list[str]):
+    copy, galaxies = _get_galaxies_and_sky_map(sky)
+    sky_map, _ = _get_galaxies_and_sky_map(get_rotated_grid(copy))
+    for _ in range(3):
+        sky_map = get_rotated_grid(sky_map)
+    galaxies = [(y, x) for y, row in enumerate(sky_map)
+                for x, c in enumerate(row) if c == '#']
+    sum_ = 0
+    for i, (y, x) in enumerate(galaxies):
+        for y1, x1 in galaxies[i+1:]:
+            sum_ += abs(y-y1) + abs(x-x1)
+    return sum_
 
 
-def check_enclosure(perim, enclosed: Set[Tuple[int, int]]):
-    max_y, min_y = max(perim)[0], min(perim)[0]
-    max_x, min_x = max(x for _, x in perim), min(x for _, x in perim)
-
-    print(f'{len(enclosed)=}')
-
-    for y, x in enclosed.copy():
-        s0 = {(yi, x) for yi in range(min_y, max_y+1)}
-        s1 = {(y, xi) for xi in range(min_x, max_x+1)}
-        i0, i1 = perim.intersection(s0), perim.intersection(s1)
-        if len(i0) % 2 == len(i1) % 2 == 1:
-            enclosed.remove((y, x))
-
-    return len(enclosed)
+def _get_galaxies_and_sky_map(sky: list[str|list]):
+    copy, galaxies = [], set()
+    for row in sky:
+        copy.append(row)
+        if '#' not in row:
+            copy.append(row)
+    return copy, galaxies
 
 
-# @TODO: delete this
-def _print_pipes(p):
-    for line in p:
-        print(''.join(line))
-    print('\n***********\n')
-
-
-if __name__ == '__main__':
-    s1 = set(map(tuple, zip(range(5), range(5, 10))))
-    check_enclosure({(1, 2), (3, 4)}, s1)
+def get_rotated_grid(grid: Iterable[Iterable]):
+    return [list(reversed(x)) for x in zip(*grid)]
