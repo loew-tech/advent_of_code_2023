@@ -139,9 +139,9 @@ def get_day_8_step_counter(
         part: str) -> Callable[[str], int]:
 
     def count_steps(key: str) -> int:
-        count = 0
+        count = -1
         while count := count + 1:
-            key = mapping[key][sequence[(count - 1) % len(sequence)]]
+            key = mapping[key][sequence[count % len(sequence)]]
             if key == 'ZZZ' if part.lower() == 'A' else key[-1] == 'Z':
                 return count
 
@@ -201,27 +201,26 @@ def get_is_enclosed(perim: Set[Tuple[int, int]], pipes: list[str]):
     return is_enclosed
 
 
-def get_galaxies_distance(sky: list[str]):
-    copy, galaxies = _get_galaxies_and_sky_map(sky)
-    sky_map, _ = _get_galaxies_and_sky_map(get_rotated_grid(copy))
-    for _ in range(3):
-        sky_map = get_rotated_grid(sky_map)
-    galaxies = [(y, x) for y, row in enumerate(sky_map)
+def get_galaxies_distance(sky: list[str], offset=1):
+    y_indices = _get_galaxies_and_sky_map(sky)
+    x_indices = _get_galaxies_and_sky_map(get_rotated_grid(sky))
+    galaxies = [(y, x) for y, row in enumerate(sky)
                 for x, c in enumerate(row) if c == '#']
     sum_ = 0
     for i, (y, x) in enumerate(galaxies):
         for y1, x1 in galaxies[i+1:]:
             sum_ += abs(y-y1) + abs(x-x1)
+            y_max, y_min = max(y, y1), min(y, y1)
+            x_max, x_min = max(x, x1), min(x, x1)
+            sum_ += offset * len(
+                set(range(y_min, y_max + 1)).intersection(y_indices))
+            sum_ += offset * len(
+                set(range(x_min, x_max + 1)).intersection(x_indices))
     return sum_
 
 
-def _get_galaxies_and_sky_map(sky: list[str|list]):
-    copy, galaxies = [], set()
-    for row in sky:
-        copy.append(row)
-        if '#' not in row:
-            copy.append(row)
-    return copy, galaxies
+def _get_galaxies_and_sky_map(sky: list[str | list]):
+    return {y for y, row in enumerate(sky) if '#' not in row}
 
 
 def get_rotated_grid(grid: Iterable[Iterable]):

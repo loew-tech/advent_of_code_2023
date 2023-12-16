@@ -175,7 +175,9 @@ def day_10(part='A') -> int:
 
 
 def day_11(part='A'):
-    return get_galaxies_distance(read_input(day=11))
+    sky = read_input(day=11)
+    return get_galaxies_distance(sky) if part.upper() == 'A' else \
+        get_galaxies_distance(sky, 999_999)
 
 
 if __name__ == '__main__':
@@ -200,3 +202,4 @@ if __name__ == '__main__':
     print(f'{day_10()=}')
     print(f'{day_10(part="B")=}')
     print(f'{day_11()=}')
+    print(f'{day_11(part="B")=}')
