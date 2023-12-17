@@ -239,12 +239,9 @@ def parse_day_12() -> Tuple[List[str], List[List[int]]]:
 
 
 def get_reflection_val(data: List[List[str] | str]) -> int:
-    vertical_reflections = [y for y, line in enumerate(data) if
-                            _is_reflection(data, y)]
+    vertical_reflections = _find_reflections(data)
     sum_ = sum(y for y in vertical_reflections) * 100
-    rotated = get_rotated_grid(data)
-    horizontal_reflections = [y for y, line in enumerate(rotated) if
-                              _is_reflection(rotated, y)]
+    horizontal_reflections = _find_reflections(get_rotated_grid(data))
     return sum_ + sum(y for y in horizontal_reflections)
 
 
