@@ -1,7 +1,7 @@
 from collections import defaultdict, Counter, namedtuple
 from string import digits
 from typing import Tuple, Callable, Any, Generator, DefaultDict, Set, Iterable, \
-    List
+    List, Dict
 
 from classes import Searcher
 from constants import *
@@ -9,7 +9,7 @@ from constants import *
 Hand = namedtuple('Hand', ['type', 'cards', 'bid'])
 
 
-def read_input(day: int | str, delim='\n') -> list[str]:
+def read_input(day: int | str, delim='\n') -> List[str]:
     with open(f'inputs/day_{day}.txt') as f:
         return f.read().rstrip().split(delim)
 
@@ -139,9 +139,9 @@ def get_day_8_step_counter(
         part: str) -> Callable[[str], int]:
 
     def count_steps(key: str) -> int:
-        count = -1
+        count = 0
         while count := count + 1:
-            key = mapping[key][sequence[count % len(sequence)]]
+            key = mapping[key][sequence[(count-1) % len(sequence)]]
             if key == 'ZZZ' if part.lower() == 'A' else key[-1] == 'Z':
                 return count
 
@@ -188,7 +188,8 @@ def _get_first_move(pipes: list[str], ys, xs: int) -> Generator:
         yield ys, xs-1, 0, -1, pipes[ys][xs-1]
 
 
-def get_is_enclosed(perim: Set[Tuple[int, int]], pipes: list[str]):
+def get_is_enclosed(perim: Set[Tuple[int, int]],
+                    pipes: list[str]) -> Callable[[int, int], int]:
     def is_enclosed(x, y: int):
         if (y, x) in perim:
             return 0
@@ -201,7 +202,7 @@ def get_is_enclosed(perim: Set[Tuple[int, int]], pipes: list[str]):
     return is_enclosed
 
 
-def get_galaxies_distance(sky: list[str], offset=1):
+def get_galaxies_distance(sky: list[str], offset=1) -> int:
     y_indices = _get_galaxies_and_sky_map(sky)
     x_indices = _get_galaxies_and_sky_map(get_rotated_grid(sky))
     galaxies = [(y, x) for y, row in enumerate(sky)
@@ -219,9 +220,46 @@ def get_galaxies_distance(sky: list[str], offset=1):
     return sum_
 
 
-def _get_galaxies_and_sky_map(sky: list[str | list]):
+def _get_galaxies_and_sky_map(sky: List[str | list]) -> Set[int]:
     return {y for y, row in enumerate(sky) if '#' not in row}
 
 
-def get_rotated_grid(grid: Iterable[Iterable]):
+def get_rotated_grid(grid: Iterable[Iterable]) -> List[List[Any]]:
     return [list(reversed(x)) for x in zip(*grid)]
+
+
+def parse_day_12() -> Tuple[List[str], List[List[int]]]:
+    springs, records = [], []
+    for line in read_input(day=12):
+        s, r = line.split()
+        r = [int(i) for i in r.split(',')]
+        springs.append(s+'.')
+        records.append(r)
+    return springs, records
+
+
+def get_reflection_val(data: List[List[str] | str]) -> int:
+    vertical_reflections = [y for y, line in enumerate(data) if
+                            _is_reflection(data, y)]
+    sum_ = sum(y for y in vertical_reflections) * 100
+    rotated = get_rotated_grid(data)
+    horizontal_reflections = [y for y, line in enumerate(rotated) if
+                              _is_reflection(rotated, y)]
+    return sum_ + sum(y for y in horizontal_reflections)
+
+
+def _find_reflections(grid: List[List[str] | str]) -> List[int]:
+    return [y for y, line in enumerate(grid) if _is_reflection(grid, y)]
+
+
+def _is_reflection(grid: List[List[str] | str], index: int) -> bool:
+    if index < len(grid)//2:
+        for i in range(index):
+            if not grid[index-i-1] == grid[index+i]:
+                return False
+        return bool(index)
+
+    for i in range(len(grid)-index):
+        if not grid[index-i-1] == grid[index+i]:
+            return False
+    return True

@@ -174,10 +174,20 @@ def day_10(part='A') -> int:
                for x in range(len(pipes[y])))
 
 
-def day_11(part='A'):
+def day_11(part='A') -> int:
     sky = read_input(day=11)
     return get_galaxies_distance(sky) if part.upper() == 'A' else \
         get_galaxies_distance(sky, 999_999)
+
+
+def day_12(part='A') -> int:
+    # springs, records = parse_day_12()
+    return NotImplemented
+
+
+def day_13(part='A') -> int:
+    data = read_input(day=13, delim='\n\n')
+    return sum(get_reflection_val(i.split('\n')) for i in data)
 
 
 if __name__ == '__main__':
@@ -203,3 +213,6 @@ if __name__ == '__main__':
     print(f'{day_10(part="B")=}')
     print(f'{day_11()=}')
     print(f'{day_11(part="B")=}')
+    print(f'{day_12()=}')
+    print(f'{day_12(part="B")=}')
+    print(f'{day_13()=}')
