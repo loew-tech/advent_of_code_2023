@@ -137,14 +137,12 @@ def get_day_8_step_counter(
         sequence: str,
         mapping: dict,
         part: str) -> Callable[[str], int]:
-
     def count_steps(key: str) -> int:
         count = 0
         while count := count + 1:
             key = mapping[key][sequence[(count-1) % len(sequence)]]
             if key == 'ZZZ' if part.lower() == 'A' else key[-1] == 'Z':
                 return count
-
     return count_steps
 
 
@@ -224,10 +222,6 @@ def _get_galaxies_and_sky_map(sky: List[str | list]) -> Set[int]:
     return {y for y, row in enumerate(sky) if '#' not in row}
 
 
-def get_rotated_grid(grid: Iterable[Iterable]) -> List[List[Any]]:
-    return [list(reversed(x)) for x in zip(*grid)]
-
-
 def parse_day_12() -> Tuple[List[str], List[List[int]]]:
     springs, records = [], []
     for line in read_input(day=12):
@@ -264,3 +258,25 @@ def _is_reflection(grid: List[List[str] | str], index,
         if diffs > 1 or dif_count > allowed_diffs:
             return False
     return dif_count == allowed_diffs
+
+
+def roll_boulders(grid: List[str]) -> List[List[str]]:
+    copy_ = [[x for x in row] for row in grid]
+    for x in range(len(grid[0])):
+        last_boulder = -1
+        for y in range(len(grid)):
+            if grid[y][x] == '#':
+                last_boulder = y
+            elif grid[y][x] == 'O':
+                copy_[y][x], copy_[last_boulder+1][x] = '.', 'O'
+                last_boulder += 1
+    return copy_
+
+
+def print_grid(grid: Iterable[Iterable]) -> None:
+    for row in grid:
+        print(*row)
+
+
+def get_rotated_grid(grid: Iterable[Iterable]) -> List[List[Any]]:
+    return [list(reversed(x)) for x in zip(*grid)]

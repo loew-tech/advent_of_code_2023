@@ -177,7 +177,7 @@ def day_10(part='A') -> int:
 def day_11(part='A') -> int:
     sky = read_input(day=11)
     return get_galaxies_distance(sky) if part.upper() == 'A' else \
-        get_galaxies_distance(sky, 999_999)
+        get_galaxies_distance(sky, offset=999_999)
 
 
 def day_12(part='A') -> int:
@@ -189,6 +189,13 @@ def day_13(part='A') -> int:
     data = read_input(day=13, delim='\n\n')
     allowed_diffs = 0 if part.upper() == 'A' else 1
     return sum(get_reflection_val(i.split('\n'), allowed_diffs) for i in data)
+
+
+def day_14(part='A') -> int:
+    boulders = roll_boulders(read_input(day=14))
+    inverse_boulders = get_rotated_grid(get_rotated_grid(boulders))
+    return sum(line.count('O') * y for y, line in enumerate(
+        inverse_boulders, start=1))
 
 
 if __name__ == '__main__':
@@ -218,3 +225,4 @@ if __name__ == '__main__':
     print(f'{day_12(part="B")=}')
     print(f'{day_13()=}')
     print(f'{day_13(part="B")=}')
+    print(f'{day_14()=}')
