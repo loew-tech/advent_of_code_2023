@@ -192,10 +192,28 @@ def day_13(part='A') -> int:
 
 
 def day_14(part='A') -> int:
-    boulders = roll_boulders(read_input(day=14))
-    inverse_boulders = get_rotated_grid(get_rotated_grid(boulders))
-    return sum(line.count('O') * y for y, line in enumerate(
-        inverse_boulders, start=1))
+    boulders = read_input(day=14)
+    if part.upper() == 'A':
+        boulders = roll_boulders(boulders)
+        inverse_boulders = get_rotated_grid(get_rotated_grid(boulders))
+        return sum(line.count('O') * y for y, line in enumerate(
+            inverse_boulders, start=1))
+
+    observed, cycles, hashable = {}, {}, None
+    for i in range(1_000_000_000):
+        hashable = grid_to_hashable(boulders)
+        cycles[i] = boulders
+        if hashable in observed:
+            break
+        observed[grid_to_hashable(boulders)] = i
+        for _ in range(4):
+            boulders = get_rotated_grid(roll_boulders(boulders))
+    offset = observed[hashable]
+    cycle_len = len(observed) - offset
+    key = (1_000_000_000-offset) % cycle_len + offset
+    inverse_boulders = get_rotated_grid(get_rotated_grid(cycles[key]))
+    return sum(line.count('O') * y for y, line in enumerate(inverse_boulders,
+                                                            start=1))
 
 
 if __name__ == '__main__':
@@ -226,3 +244,4 @@ if __name__ == '__main__':
     print(f'{day_13()=}')
     print(f'{day_13(part="B")=}')
     print(f'{day_14()=}')
+    print(f'{day_14(part="B")=}')

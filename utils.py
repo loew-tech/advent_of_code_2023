@@ -280,3 +280,7 @@ def print_grid(grid: Iterable[Iterable]) -> None:
 
 def get_rotated_grid(grid: Iterable[Iterable]) -> List[List[Any]]:
     return [list(reversed(x)) for x in zip(*grid)]
+
+
+def grid_to_hashable(grid: Iterable[Iterable]) -> Tuple[Tuple[Any, ...], ...]:
+    return tuple(tuple(row) for row in grid)
