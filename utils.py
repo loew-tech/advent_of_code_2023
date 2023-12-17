@@ -260,6 +260,30 @@ def _is_reflection(grid: List[List[str] | str], index,
     return dif_count == allowed_diffs
 
 
+def cycle_boulders(boulders: List[str], num_cycles=1,
+                   num_rotations=1) -> List[List[str]]:
+    observed, cycles, hashable = {}, {}, None
+    for i in range(num_cycles):
+        hashable = grid_to_hashable(boulders)
+        cycles[i] = boulders
+        if hashable in observed:
+            break
+        observed[grid_to_hashable(boulders)] = i
+        for _ in range(num_rotations):
+            boulders = roll_boulders(boulders)
+            if num_rotations > 1:
+                boulders = get_rotated_grid(boulders)
+
+    if num_cycles > 1:
+        offset = observed[hashable]
+        cycle_len = len(observed) - offset
+        key = (1_000_000_000-offset) % cycle_len + offset
+        grid = cycles[key]
+    else:
+        grid = boulders
+    return grid
+
+
 def roll_boulders(grid: List[str]) -> List[List[str]]:
     copy_ = [[x for x in row] for row in grid]
     for x in range(len(grid[0])):
