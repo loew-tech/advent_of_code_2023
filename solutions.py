@@ -181,13 +181,14 @@ def day_11(part='A') -> int:
 
 
 def day_12(part='A') -> int:
-    # springs, records = parse_day_12()
+    springs, records = parse_day_12()
     return NotImplemented
 
 
 def day_13(part='A') -> int:
     data = read_input(day=13, delim='\n\n')
-    return sum(get_reflection_val(i.split('\n')) for i in data)
+    allowed_diffs = 0 if part.upper() == 'A' else 1
+    return sum(get_reflection_val(i.split('\n'), allowed_diffs) for i in data)
 
 
 if __name__ == '__main__':
@@ -216,3 +217,4 @@ if __name__ == '__main__':
     print(f'{day_12()=}')
     print(f'{day_12(part="B")=}')
     print(f'{day_13()=}')
+    print(f'{day_13(part="B")=}')

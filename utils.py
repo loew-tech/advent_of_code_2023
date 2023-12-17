@@ -238,25 +238,29 @@ def parse_day_12() -> Tuple[List[str], List[List[int]]]:
     return springs, records
 
 
-def get_reflection_val(data: List[List[str] | str]) -> int:
-    vertical_reflections = _find_reflections(data)
+def get_reflection_val(data: List[List[str] | str],
+                       allowed_diffs=0) -> int:
+    vertical_reflections = _find_reflections(data, allowed_diffs)
     sum_ = sum(y for y in vertical_reflections) * 100
-    horizontal_reflections = _find_reflections(get_rotated_grid(data))
+    rotated = get_rotated_grid(data)
+    horizontal_reflections = _find_reflections(rotated, allowed_diffs)
     return sum_ + sum(y for y in horizontal_reflections)
 
 
-def _find_reflections(grid: List[List[str] | str]) -> List[int]:
-    return [y for y, line in enumerate(grid) if _is_reflection(grid, y)]
+def _find_reflections(grid: List[List[str] | str],
+                      allowed_diffs: int) -> List[int]:
+    return [y for y, line in enumerate(grid) if
+            _is_reflection(grid, y, allowed_diffs)]
 
 
-def _is_reflection(grid: List[List[str] | str], index: int) -> bool:
-    if index < len(grid)//2:
-        for i in range(index):
-            if not grid[index-i-1] == grid[index+i]:
-                return False
-        return bool(index)
-
-    for i in range(len(grid)-index):
-        if not grid[index-i-1] == grid[index+i]:
+def _is_reflection(grid: List[List[str] | str], index,
+                   allowed_diffs: int) -> bool:
+    dif_count = 0
+    size = index if index < len(grid)//2 else len(grid)-index
+    for i in range(size):
+        diffs = sum(not val == grid[index-i-1][x] for x, val in
+                    enumerate(grid[index+i]))
+        dif_count += diffs
+        if diffs > 1 or dif_count > allowed_diffs:
             return False
-    return True
+    return dif_count == allowed_diffs
