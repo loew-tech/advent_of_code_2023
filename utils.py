@@ -308,3 +308,11 @@ def get_rotated_grid(grid: Iterable[Iterable]) -> List[List[Any]]:
 
 def grid_to_hashable(grid: Iterable[Iterable]) -> Tuple[Tuple[Any, ...], ...]:
     return tuple(tuple(row) for row in grid)
+
+
+def get_hash_val(str_: str) -> int:
+    val = 0
+    for c in str_:
+        val = ((val + ord(c)) * 17) % 256
+    return val
+
