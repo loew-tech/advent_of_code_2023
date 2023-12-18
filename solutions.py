@@ -204,11 +204,7 @@ def day_14(part='A') -> int:
 def day_15(part='A'):
     data = read_input(day=15, delim=',')
     return sum(get_hash_val(i) for i in data) if part.upper() == 'A' else \
-        day_15b(data)
-
-
-def day_15b(data: list[str]) -> int:
-    return NotImplemented
+        day_15b_helper(data)
 
 
 if __name__ == '__main__':
@@ -241,3 +237,4 @@ if __name__ == '__main__':
     print(f'{day_14()=}')
     print(f'{day_14(part="B")=}')
     print(f'{day_15()=}')
+    print(f'{day_15(part="B")=}')

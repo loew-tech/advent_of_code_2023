@@ -302,17 +302,43 @@ def print_grid(grid: Iterable[Iterable]) -> None:
         print(*row)
 
 
+def get_hash_val(str_: str) -> int:
+    val = 0
+    for c in str_:
+        val = ((val + ord(c)) * 17) % 256
+    return val
+
+
+def day_15b_helper(data: List[str]):
+    boxes, sum_ = populate_boxes(data), 0
+    for i, box in enumerate(boxes, start=1):
+        index = 1
+        # Note, this step takes advantage of dicts being ordered
+        for val in box.values():
+            sum_ += i * val * index
+            index += 1
+    return sum_
+
+
+def populate_boxes(data: List[str]) -> List[Dict[str, int]]:
+    boxes = [{} for _ in range(256)]
+    for entry in data:
+        if '=' in entry:
+            label, len_length = entry.split('=')
+            hash_ = get_hash_val(label)
+            boxes[hash_][label] = int(len_length)
+        else:
+            label = entry.split('-')[0]
+            hash_ = get_hash_val(label)
+            if label in boxes[hash_]:
+                del boxes[hash_][label]
+    return boxes
+
+
 def get_rotated_grid(grid: Iterable[Iterable]) -> List[List[Any]]:
     return [list(reversed(x)) for x in zip(*grid)]
 
 
 def grid_to_hashable(grid: Iterable[Iterable]) -> Tuple[Tuple[Any, ...], ...]:
     return tuple(tuple(row) for row in grid)
-
-
-def get_hash_val(str_: str) -> int:
-    val = 0
-    for c in str_:
-        val = ((val + ord(c)) * 17) % 256
-    return val
 
