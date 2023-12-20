@@ -207,6 +207,12 @@ def day_15(part='A'):
         day_15b_helper(data)
 
 
+def day_16(part='A'):
+    data = read_input(day=16)
+    visited = light_traversal(data)
+    return len({(y, x) for y, x, _ in visited})
+
+
 if __name__ == '__main__':
     print(f'{day_1()=}')
     print(f'{day_1(part="B")=}')
@@ -238,3 +244,4 @@ if __name__ == '__main__':
     print(f'{day_14(part="B")=}')
     print(f'{day_15()=}')
     print(f'{day_15(part="B")=}')
+    print(f'{day_16()=}')

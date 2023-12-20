@@ -3,7 +3,7 @@ from string import digits
 from typing import Tuple, Callable, Any, Generator, DefaultDict, Set, Iterable, \
     List, Dict
 
-from classes import Searcher
+from classes import Searcher, LightBeam
 from constants import *
 
 Hand = namedtuple('Hand', ['type', 'cards', 'bid'])
@@ -297,11 +297,6 @@ def roll_boulders(grid: List[str]) -> List[List[str]]:
     return copy_
 
 
-def print_grid(grid: Iterable[Iterable]) -> None:
-    for row in grid:
-        print(*row)
-
-
 def get_hash_val(str_: str) -> int:
     val = 0
     for c in str_:
@@ -335,10 +330,52 @@ def populate_boxes(data: List[str]) -> List[Dict[str, int]]:
     return boxes
 
 
+def light_traversal(lights: List[str]):
+    starting_dir = LIGHT_DIRECTIONS_MAPPING[('>', lights[0][0])][0]
+    to_search = {LightBeam(direction=starting_dir)}
+    visited = {(0, 0, starting_dir)}
+    get_light_dirs = _get_get_light_directions(lights)
+    while to_search:
+        next_search = []
+        for light in to_search:
+            light.increment_location()
+            y, x = light.location
+            if (y, x, light.direction) in visited or \
+                    not is_in_bounds(y, x, lights):
+                continue
+            visited.add((y, x, light.direction))
+            a, b = get_light_dirs(y, x, light.direction)
+            if a.strip():
+                light.direction = a
+                next_search.append(light)
+            if b.strip():
+                next_search.append(LightBeam(y, x, b))
+        to_search = next_search
+    return visited
+
+
+def _get_get_light_directions(lights: List[str]) -> Callable[[int, int, str],
+                                                             str]:
+    def _get_light_directions(y, x: int, direction: str) -> str:
+        if not is_in_bounds(y, x, lights):
+            return '  '
+        loc = lights[y][x]
+        if loc == '.':
+            return direction+' '
+        return LIGHT_DIRECTIONS_MAPPING[(direction, loc)]
+
+    return _get_light_directions
+
+
 def get_rotated_grid(grid: Iterable[Iterable]) -> List[List[Any]]:
     return [list(reversed(x)) for x in zip(*grid)]
 
 
 def grid_to_hashable(grid: Iterable[Iterable]) -> Tuple[Tuple[Any, ...], ...]:
     return tuple(tuple(row) for row in grid)
+
+
+def print_grid(grid: Iterable[Iterable], spacer='') -> None:
+    for row in grid:
+        print(spacer.join(str(i) for i in row))
 
