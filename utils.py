@@ -330,10 +330,16 @@ def populate_boxes(data: List[str]) -> List[Dict[str, int]]:
     return boxes
 
 
-def light_traversal(lights: List[str]):
-    starting_dir = LIGHT_DIRECTIONS_MAPPING[('>', lights[0][0])][0]
-    to_search = {LightBeam(direction=starting_dir)}
-    visited = {(0, 0, starting_dir)}
+def light_traversal(lights: List[str], start_y=0, start_x=0, starting_dir='>'):
+    s1, s2 = starting_dir, ''
+    if not lights[start_y][start_x] == '.':
+        s1, s2 = LIGHT_DIRECTIONS_MAPPING[(starting_dir,
+                                           lights[start_y][start_x])]
+    to_search = {LightBeam(y=start_y, x=start_x, direction=s1)}
+    visited = {(start_y, start_x, s1)}
+    if s2.strip():
+        to_search.add(LightBeam(y=start_y, x=start_x, direction=s2))
+        visited.add((start_y, start_x, s2))
     get_light_dirs = _get_get_light_directions(lights)
     while to_search:
         next_search = []

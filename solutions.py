@@ -201,47 +201,63 @@ def day_14(part='A') -> int:
                                                             start=1))
 
 
-def day_15(part='A'):
+def day_15(part='A') -> int:
     data = read_input(day=15, delim=',')
     return sum(get_hash_val(i) for i in data) if part.upper() == 'A' else \
         day_15b_helper(data)
 
 
-def day_16(part='A'):
-    data = read_input(day=16)
-    visited = light_traversal(data)
-    return len({(y, x) for y, x, _ in visited})
+def day_16(part='A') -> int:
+    lights = read_input(day=16)
+    if part.upper() == 'A':
+        visited = light_traversal(lights)
+        return len({(y, x) for y, x, _ in visited})
+    return day_16b(lights)
+
+
+def day_16b(lights: List[str]) -> int:
+    to_check = [(0, x, 'v') for x in range(len(lights[0]))]
+    to_check.extend((len(lights)-1, x, '^') for x in range(len(lights[0])))
+    to_check.extend((y, 0, '>') for y in range(len(lights)))
+    to_check.extend((y, len(lights[0])-1, '<') for y in range(len(lights)))
+
+    max_ = -1
+    for y, x, dir_ in to_check:
+        visited = light_traversal(lights, start_y=y, start_x=x, starting_dir=dir_)
+        max_ = max(max_, len({(y, x) for y, x, _ in visited}))
+    return max_
 
 
 if __name__ == '__main__':
-    print(f'{day_1()=}')
-    print(f'{day_1(part="B")=}')
-    print(f'{day_2()=}')
-    print(f'{day_2(part="B")=}')
-    print(f'{day_3()=}')
-    print(f'{day_3(part="B")=}')
-    print(f'{day_4()=}')
-    print(f'{day_4(part="B")=}')
-    print(f'{day_5()=}')
-    print(f'{day_5(part="B")=}')
-    print(f'{day_6()=}')
-    print(f'{day_6(part="B")=}')
-    print(f'{day_7()=}')
-    print(f'{day_7(part="B")=}')
-    print(f'{day_8()=}')
-    print(f'{day_8(part="B")=}')
-    print(f'{day_9()=}')
-    print(f'{day_9(part="B")=}')
-    print(f'{day_10()=}')
-    print(f'{day_10(part="B")=}')
-    print(f'{day_11()=}')
-    print(f'{day_11(part="B")=}')
-    print(f'{day_12()=}')
-    print(f'{day_12(part="B")=}')
-    print(f'{day_13()=}')
-    print(f'{day_13(part="B")=}')
-    print(f'{day_14()=}')
-    print(f'{day_14(part="B")=}')
-    print(f'{day_15()=}')
-    print(f'{day_15(part="B")=}')
+    # print(f'{day_1()=}')
+    # print(f'{day_1(part="B")=}')
+    # print(f'{day_2()=}')
+    # print(f'{day_2(part="B")=}')
+    # print(f'{day_3()=}')
+    # print(f'{day_3(part="B")=}')
+    # print(f'{day_4()=}')
+    # print(f'{day_4(part="B")=}')
+    # print(f'{day_5()=}')
+    # print(f'{day_5(part="B")=}')
+    # print(f'{day_6()=}')
+    # print(f'{day_6(part="B")=}')
+    # print(f'{day_7()=}')
+    # print(f'{day_7(part="B")=}')
+    # print(f'{day_8()=}')
+    # print(f'{day_8(part="B")=}')
+    # print(f'{day_9()=}')
+    # print(f'{day_9(part="B")=}')
+    # print(f'{day_10()=}')
+    # print(f'{day_10(part="B")=}')
+    # print(f'{day_11()=}')
+    # print(f'{day_11(part="B")=}')
+    # print(f'{day_12()=}')
+    # print(f'{day_12(part="B")=}')
+    # print(f'{day_13()=}')
+    # print(f'{day_13(part="B")=}')
+    # print(f'{day_14()=}')
+    # print(f'{day_14(part="B")=}')
+    # print(f'{day_15()=}')
+    # print(f'{day_15(part="B")=}')
     print(f'{day_16()=}')
+    print(f'{day_16(part="B")}')
