@@ -363,8 +363,6 @@ def light_traversal(lights: List[str], start_y=0, start_x=0, starting_dir='>'):
 def _get_get_light_directions(lights: List[str]) -> Callable[[int, int, str],
                                                              str]:
     def _get_light_directions(y, x: int, direction: str) -> str:
-        if not is_in_bounds(y, x, lights):
-            return '  '
         loc = lights[y][x]
         if loc == '.':
             return direction+' '
