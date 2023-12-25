@@ -1,7 +1,11 @@
+from collections import namedtuple
 from typing import Tuple
 
 from constants import PIPE_DIRECTIONS, LIGHT_DIRECTIONS
-from constants import LIGHT_DIRECTIONS
+
+
+Hand = namedtuple('Hand', ['type', 'cards', 'bid'])
+DigInstruction = namedtuple('DigInstruction', ['direction', 'distance', 'hex'])
 
 
 class Searcher:

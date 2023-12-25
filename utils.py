@@ -1,12 +1,10 @@
-from collections import defaultdict, Counter, namedtuple
+from collections import defaultdict, Counter
 from string import digits
 from typing import Tuple, Callable, Any, Generator, DefaultDict, Set, Iterable, \
     List, Dict
 
-from classes import Searcher, LightBeam
+from classes import Hand, Searcher, LightBeam, DigInstruction
 from constants import *
-
-Hand = namedtuple('Hand', ['type', 'cards', 'bid'])
 
 
 def read_input(day: int | str, delim='\n') -> List[str]:
@@ -40,12 +38,14 @@ def day_3b_helper(data: list[str], y, x: int) -> int:
         indices = {(y + y_inc, x + x_inc)}
         start_y, start_x = y + y_inc, x + x_inc
 
-        x_left, x_right, val_ = start_x - 1, start_x + 1, data[start_y][start_x]
+        x_left, x_right, val_ = start_x - 1, start_x + 1, data[start_y][
+            start_x]
         while 0 <= x_left and data[start_y][x_left] in digits:
             indices.add((start_y, x_left))
             val_ = data[start_y][x_left] + val_
             x_left -= 1
-        while x_right < len(data[start_y]) and data[start_y][x_right] in digits:
+        while x_right < len(data[start_y]) and data[start_y][
+            x_right] in digits:
             indices.add((start_y, x_right))
             val_ += data[start_y][x_right]
             x_right += 1
@@ -54,7 +54,8 @@ def day_3b_helper(data: list[str], y, x: int) -> int:
 
     used_indices, val1, val2 = set(), 0, 0
     for yi, xi in DIRECTIONS:
-        if is_in_bounds(y + yi, x + xi, data) and data[y + yi][x + xi] in digits \
+        if is_in_bounds(y + yi, x + xi, data) and data[y + yi][
+            x + xi] in digits \
                 and (y + yi, x + xi) not in used_indices:
             indices_, val = build_digit(yi, xi)
             val1, val2 = (val, val2) if not val1 else (val1, val)
@@ -97,6 +98,7 @@ def _get_input_to_hand(part: str) -> Callable[[Tuple[str, ...]], Hand]:
         cards, bid = hand
         return Hand(type=(_get_hand_type(cards, part)), cards=cards,
                     bid=int(bid))
+
     return _input_to_hand
 
 
@@ -140,9 +142,10 @@ def get_day_8_step_counter(
     def count_steps(key: str) -> int:
         count = 0
         while count := count + 1:
-            key = mapping[key][sequence[(count-1) % len(sequence)]]
+            key = mapping[key][sequence[(count - 1) % len(sequence)]]
             if key == 'ZZZ' if part.lower() == 'A' else key[-1] == 'Z':
                 return count
+
     return count_steps
 
 
@@ -176,14 +179,14 @@ def _find_start(grid: list[Any] | Tuple[Any], target: Any) -> Tuple[int, int]:
 
 
 def _get_first_move(pipes: list[str], ys, xs: int) -> Generator:
-    if ys+1 < len(pipes) and pipes[ys+1][xs] in '|JL':
-        yield ys+1, xs, 1, 0, pipes[ys+1][xs]
-    if 0 <= ys-1 and pipes[ys-1][xs] in '|7F':
-        yield ys-1, xs, -1, 0, pipes[ys-1][xs]
-    if xs+1 < len(pipes[ys]) and pipes[ys][xs+1] in '-J7':
-        yield ys, xs+1, 0, 1, pipes[ys][xs+1]
-    if 0 <= xs-1 and pipes[ys][xs-1] in '-FL':
-        yield ys, xs-1, 0, -1, pipes[ys][xs-1]
+    if ys + 1 < len(pipes) and pipes[ys + 1][xs] in '|JL':
+        yield ys + 1, xs, 1, 0, pipes[ys + 1][xs]
+    if 0 <= ys - 1 and pipes[ys - 1][xs] in '|7F':
+        yield ys - 1, xs, -1, 0, pipes[ys - 1][xs]
+    if xs + 1 < len(pipes[ys]) and pipes[ys][xs + 1] in '-J7':
+        yield ys, xs + 1, 0, 1, pipes[ys][xs + 1]
+    if 0 <= xs - 1 and pipes[ys][xs - 1] in '-FL':
+        yield ys, xs - 1, 0, -1, pipes[ys][xs - 1]
 
 
 def get_is_enclosed(perim: Set[Tuple[int, int]],
@@ -197,6 +200,7 @@ def get_is_enclosed(perim: Set[Tuple[int, int]],
             y2 += 1
             x2 += 1
         return cross_count % 2
+
     return is_enclosed
 
 
@@ -207,8 +211,8 @@ def get_galaxies_distance(sky: list[str], offset=1) -> int:
                 for x, c in enumerate(row) if c == '#']
     sum_ = 0
     for i, (y, x) in enumerate(galaxies):
-        for y1, x1 in galaxies[i+1:]:
-            sum_ += abs(y-y1) + abs(x-x1)
+        for y1, x1 in galaxies[i + 1:]:
+            sum_ += abs(y - y1) + abs(x - x1)
             y_max, y_min = max(y, y1), min(y, y1)
             x_max, x_min = max(x, x1), min(x, x1)
             sum_ += offset * len(
@@ -227,7 +231,7 @@ def parse_day_12() -> Tuple[List[str], List[List[int]]]:
     for line in read_input(day=12):
         s, r = line.split()
         r = [int(i) for i in r.split(',')]
-        springs.append(s+'.')
+        springs.append(s + '.')
         records.append(r)
     return springs, records
 
@@ -250,10 +254,10 @@ def _find_reflections(grid: List[List[str] | str],
 def _is_reflection(grid: List[List[str] | str], index,
                    allowed_diffs: int) -> bool:
     dif_count = 0
-    size = index if index < len(grid)//2 else len(grid)-index
+    size = index if index < len(grid) // 2 else len(grid) - index
     for i in range(size):
-        diffs = sum(not val == grid[index-i-1][x] for x, val in
-                    enumerate(grid[index+i]))
+        diffs = sum(not val == grid[index - i - 1][x] for x, val in
+                    enumerate(grid[index + i]))
         dif_count += diffs
         if diffs > 1 or dif_count > allowed_diffs:
             return False
@@ -277,7 +281,7 @@ def cycle_boulders(boulders: List[str], num_cycles=1,
     if num_cycles > 1:
         offset = observed[hashable]
         cycle_len = len(observed) - offset
-        key = (1_000_000_000-offset) % cycle_len + offset
+        key = (1_000_000_000 - offset) % cycle_len + offset
         grid = cycles[key]
     else:
         grid = boulders
@@ -292,7 +296,7 @@ def roll_boulders(grid: List[str]) -> List[List[str]]:
             if grid[y][x] == '#':
                 last_boulder = y
             elif grid[y][x] == 'O':
-                copy_[y][x], copy_[last_boulder+1][x] = '.', 'O'
+                copy_[y][x], copy_[last_boulder + 1][x] = '.', 'O'
                 last_boulder += 1
     return copy_
 
@@ -365,10 +369,61 @@ def _get_get_light_directions(lights: List[str]) -> Callable[[int, int, str],
     def _get_light_directions(y, x: int, direction: str) -> str:
         loc = lights[y][x]
         if loc == '.':
-            return direction+' '
+            return direction + ' '
         return LIGHT_DIRECTIONS_MAPPING[(direction, loc)]
 
     return _get_light_directions
+
+
+def parse_day_18() -> Iterable[DigInstruction]:
+    def lint_to_instruction(line: str) -> DigInstruction:
+        d, dist, hex_ = line.split()
+        return DigInstruction(direction=d, distance=int(dist), hex=hex_)
+
+    return map(lint_to_instruction, read_input(day=18))
+
+
+def dig_lagoon(instructions: Iterable[DigInstruction]) -> Set[Tuple[int, int]]:
+    head = (0, 0)
+    perim = {head}
+    for instr in instructions:
+        yi, xi = CHAR_DIRECTIONS[instr.direction]
+        y, x = head
+        count = 0
+        while count < instr.distance:
+            count += 1
+            y += yi
+            x += xi
+            head = (y, x)
+            perim.add(head)
+    return perim
+
+
+def get_lagoon_size(perim: Set[Tuple[int, int]]) -> Any:
+    y_max, y_min = max(perim)[0], min(perim)[0]
+    x_max, x_min = max(i[1] for i in perim), min(i[1] for i in perim)
+
+    y_range = range(y_min, y_max + 1)
+    x_range = range(x_min, x_max + 1)
+
+    def is_corner(y_, x_: int):
+        if not (y_, x_) in perim:
+            return False
+        if (y_ - 1, x_) in perim and (y_, x_ + 1) in perim:
+            return True
+        return (y_ + 1, x_) in perim and (y_, x_ - 1) in perim
+
+    sum_ = 0
+    for y in y_range:
+        for x in x_range:
+            y2, x2, cross_count = y, x, 0
+            while y2 in y_range and x2 in x_range:
+                cross_count += (y2, x2) in perim and not is_corner(y2, x2)
+                x2 += 1
+                y2 += 1
+            sum_ += cross_count % 2 or (y, x) in perim
+
+    return sum_
 
 
 def get_rotated_grid(grid: Iterable[Iterable]) -> List[List[Any]]:
@@ -382,4 +437,3 @@ def grid_to_hashable(grid: Iterable[Iterable]) -> Tuple[Tuple[Any, ...], ...]:
 def print_grid(grid: Iterable[Iterable], spacer='') -> None:
     for row in grid:
         print(spacer.join(str(i) for i in row))
-

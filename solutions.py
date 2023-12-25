@@ -228,6 +228,11 @@ def day_16b(lights: List[str]) -> int:
     return max_
 
 
+def day_18(part='A') -> int:
+    perim = dig_lagoon(parse_day_18())
+    return get_lagoon_size(perim)
+
+
 if __name__ == '__main__':
     print(f'{day_1()=}')
     print(f'{day_1(part="B")=}')
@@ -261,3 +266,4 @@ if __name__ == '__main__':
     print(f'{day_15(part="B")=}')
     print(f'{day_16()=}')
     print(f'{day_16(part="B")=}')
+    print(f'{day_18()=}')
