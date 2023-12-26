@@ -233,6 +233,21 @@ def day_18(part='A') -> int:
     return get_lagoon_size(perim)
 
 
+def day_19(part='A') -> int:
+    ops, data = parse_day_19()
+    sum_ = 0
+    for d in data:
+        funct, index = ops['in'], 0
+        while not funct[index] == 'A' and not funct[index] == 'R':
+            if callable(funct[index]):
+                index += 1 if funct[index](d) else 2
+                continue
+            funct, index = ops[funct[index]], 0
+        if funct[index] == 'A':
+            sum_ += sum(d.values())
+    return sum_
+
+
 if __name__ == '__main__':
     print(f'{day_1()=}')
     print(f'{day_1(part="B")=}')
@@ -267,3 +282,5 @@ if __name__ == '__main__':
     print(f'{day_16()=}')
     print(f'{day_16(part="B")=}')
     print(f'{day_18()=}')
+    print(f'{day_18(part="B")=}')
+    print(f'{day_19()=}')

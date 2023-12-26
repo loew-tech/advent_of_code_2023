@@ -1,7 +1,8 @@
 from collections import defaultdict, Counter
-from string import digits
-from typing import Tuple, Callable, Any, Generator, DefaultDict, Set, Iterable, \
-    List, Dict
+from operator import lt, gt
+from string import digits, ascii_lowercase
+from typing import Tuple, Callable, Any, Generator, DefaultDict, Set, \
+    Iterable, List, Dict
 
 from classes import Hand, Searcher, LightBeam, DigInstruction
 from constants import *
@@ -44,8 +45,8 @@ def day_3b_helper(data: list[str], y, x: int) -> int:
             indices.add((start_y, x_left))
             val_ = data[start_y][x_left] + val_
             x_left -= 1
-        while x_right < len(data[start_y]) and data[start_y][
-            x_right] in digits:
+        while x_right < len(data[start_y]) and data[start_y][x_right]\
+                in digits:
             indices.add((start_y, x_right))
             val_ += data[start_y][x_right]
             x_right += 1
@@ -424,6 +425,54 @@ def get_lagoon_size(perim: Set[Tuple[int, int]]) -> Any:
             sum_ += cross_count % 2 or (y, x) in perim
 
     return sum_
+
+
+def parse_day_19():
+    ops, data = read_input(day=19, delim='\n\n')
+    ops, data = ops.split('\n'), data.split('\n')
+    return _build_ops_dict(ops), list(map(_build_data_dict, data))
+
+
+def _build_ops_dict(ops: list[str]) -> Dict[str, List[str | Callable]]:
+    operations, ret = {'<': lt, '>': gt}, {}
+    for line in ops:
+        key, ops = line[:-1].split('{')
+        funct, temp, i = [], '', 0
+        xmas_key, op, next_op = None, None, ''
+        while i < len(ops):
+            if ops[i] in operations:
+                op, xmas_key, next_op = operations[ops[i]], ops[i-1], ''
+            elif ops[i] in digits:
+                temp += ops[i]
+            elif ops[i] in 'AR':
+                funct.append(ops[i])
+            elif ops[i] == ':':
+                funct.append(_get_compare_funct(xmas_key, temp, op))
+                temp, xmas_key, next_op = '', '', ''
+            elif ops[i] == ',':
+                if next_op:
+                    funct.append(next_op)
+                next_op = ''
+            elif ops[i] in ascii_lowercase:
+                next_op += ops[i]
+            i += 1
+        if next_op:
+            funct.append(next_op)
+        ret[key] = funct
+    return ret
+
+
+def _get_compare_funct(xmas_key, val: str,
+                       op: Callable) -> Callable[[dict], bool]:
+    return lambda d: op(d[xmas_key], int(val))
+
+
+def _build_data_dict(line: str) -> Dict[str, int]:
+    fields, ret = line[1:-1].split(','), {}
+    for entry in fields:
+        key, val = entry.split('=')
+        ret[key] = int(val)
+    return ret
 
 
 def get_rotated_grid(grid: Iterable[Iterable]) -> List[List[Any]]:
