@@ -135,7 +135,7 @@ def day_6(part='A') -> int:
     prod = 1
     for t, d in zip(times, distances):
         first, last = (t - sqrt(t ** 2 - 4 * d)) / 2, (
-                    t + sqrt(t ** 2 - 4 * d)) / 2
+                t + sqrt(t ** 2 - 4 * d)) / 2
         in_range = floor(last) - ceil(first) + 1
         in_range -= ((int(first) == first) + (int(last) == last))
         prod *= in_range
@@ -194,7 +194,7 @@ def day_13(part='A') -> int:
 def day_14(part='A') -> int:
     boulders = read_input(day=14)
     num_cycles, num_rotations = (1, 1) if part.upper() == 'A' else \
-                                (1_000_000_000, 4)
+        (1_000_000_000, 4)
     boulders = cycle_boulders(boulders, num_cycles, num_rotations)
     inverse_boulders = get_rotated_grid(get_rotated_grid(boulders))
     return sum(line.count('O') * y for y, line in enumerate(inverse_boulders,
@@ -217,13 +217,14 @@ def day_16(part='A') -> int:
 
 def day_16b(lights: List[str]) -> int:
     to_check = [(0, x, 'v') for x in range(len(lights[0]))]
-    to_check.extend((len(lights)-1, x, '^') for x in range(len(lights[0])))
+    to_check.extend((len(lights) - 1, x, '^') for x in range(len(lights[0])))
     to_check.extend((y, 0, '>') for y in range(len(lights)))
-    to_check.extend((y, len(lights[0])-1, '<') for y in range(len(lights)))
+    to_check.extend((y, len(lights[0]) - 1, '<') for y in range(len(lights)))
 
     max_ = -1
     for y, x, dir_ in to_check:
-        visited = light_traversal(lights, start_y=y, start_x=x, starting_dir=dir_)
+        visited = light_traversal(lights, start_y=y, start_x=x,
+                                  starting_dir=dir_)
         max_ = max(max_, len({(y, x) for y, x, _ in visited}))
     return max_
 
@@ -235,6 +236,13 @@ def day_18(part='A') -> int:
 
 def day_19(part='A') -> int:
     ops, data = parse_day_19()
+    if part.upper() == 'A':
+        return day_19_helper(ops, data)
+    return NotImplemented
+
+def day_19_helper(ops: List[List[Callable | str]],
+                  data: List[Dict[str, int]]) -> int:
+    print(f'{len(data)=}')
     sum_ = 0
     for d in data:
         funct, index = ops['in'], 0
@@ -284,3 +292,4 @@ if __name__ == '__main__':
     print(f'{day_18()=}')
     print(f'{day_18(part="B")=}')
     print(f'{day_19()=}')
+    print(f'{day_19(part="B")=}')

@@ -439,22 +439,22 @@ def _build_ops_dict(ops: list[str]) -> Dict[str, List[str | Callable]]:
         key, ops = line[:-1].split('{')
         funct, temp, i = [], '', 0
         xmas_key, op, next_op = None, None, ''
-        while i < len(ops):
-            if ops[i] in operations:
-                op, xmas_key, next_op = operations[ops[i]], ops[i-1], ''
-            elif ops[i] in digits:
+        for i, c in enumerate(ops):
+            if c in operations:
+                op, xmas_key, next_op = operations[c], ops[i-1], ''
+            elif c in digits:
                 temp += ops[i]
-            elif ops[i] in 'AR':
+            elif c in 'AR':
                 funct.append(ops[i])
-            elif ops[i] == ':':
+            elif c == ':':
                 funct.append(_get_compare_funct(xmas_key, temp, op))
                 temp, xmas_key, next_op = '', '', ''
-            elif ops[i] == ',':
+            elif c == ',':
                 if next_op:
                     funct.append(next_op)
                 next_op = ''
-            elif ops[i] in ascii_lowercase:
-                next_op += ops[i]
+            elif c in ascii_lowercase:
+                next_op += c
             i += 1
         if next_op:
             funct.append(next_op)
