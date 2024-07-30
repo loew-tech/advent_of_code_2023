@@ -14,7 +14,7 @@ def day_1(part='A') -> int:
 
     conversion_dict = {
         **WORD_TO_DIGIT,
-        **dict(zip((str(i) for i in range(1, 10)), range(1, 10)))
+        **{str(i): i for i in range(1, 10)}
     }
 
     return sum(int(f'{conversion_dict[re.findall(pattern, line)[0]]}'
@@ -56,7 +56,7 @@ def day_3a(data: list[str]) -> int:
             if line[x] in digits:
                 val += line[x]
                 for yi, xi in DIRECTIONS:
-                    to_add = to_add or is_in_bounds(y + yi, x + xi, data) and \
+                    to_add = to_add or is_inbounds(y + yi, x + xi, data) and \
                              data[y + yi][x + xi] not in ignore
             elif val:
                 sum_ += to_add * int(val)
@@ -65,12 +65,8 @@ def day_3a(data: list[str]) -> int:
 
 
 def day_3b(data: list[str]) -> int:
-    sum_ = 0
-    for y, line in enumerate(data):
-        for x, c in enumerate(line):
-            if c == '*':
-                sum_ += (c == '*') * day_3b_helper(data, y, x)
-    return sum_
+    return sum(sum((c == '*') * day_3b_helper(data, y, x) for x, c in
+               enumerate(line)) for y, line in enumerate(data))
 
 
 def day_4(part='A') -> int:
@@ -240,9 +236,9 @@ def day_19(part='A') -> int:
         return day_19_helper(ops, data)
     return NotImplemented
 
+
 def day_19_helper(ops: List[List[Callable | str]],
                   data: List[Dict[str, int]]) -> int:
-    print(f'{len(data)=}')
     sum_ = 0
     for d in data:
         funct, index = ops['in'], 0

@@ -26,15 +26,15 @@ def parse_day_2() -> DefaultDict[int, DefaultDict[str, int]]:
     return games
 
 
-def get_is_in_bounds(data: List[Iterable]) -> Callable[[int, int], bool]:
-    return lambda y, x: is_in_bounds(y, x, data)
+def get_is_inbounds(data: List[Iterable]) -> Callable[[int, int], bool]:
+    return lambda y, x: is_inbounds(y, x, data)
 
 
-def is_in_bounds(y, x: int, data: List[Iterable]) -> bool:
+def is_inbounds(y, x: int, data: List[Iterable]) -> bool:
     return 0 <= y < len(data) and 0 <= x < len(data[y])
 
 
-def day_3b_helper(data: list[str], y, x: int) -> int:
+def day_3b_helper(data: List[str], y, x: int) -> int:
     def build_digit(y_inc, x_inc: int) -> Tuple[set, int]:
         indices = {(y + y_inc, x + x_inc)}
         start_y, start_x = y + y_inc, x + x_inc
@@ -55,7 +55,7 @@ def day_3b_helper(data: list[str], y, x: int) -> int:
 
     used_indices, val1, val2 = set(), 0, 0
     for yi, xi in DIRECTIONS:
-        if is_in_bounds(y + yi, x + xi, data) and data[y + yi][
+        if is_inbounds(y + yi, x + xi, data) and data[y + yi][
             x + xi] in digits \
                 and (y + yi, x + xi) not in used_indices:
             indices_, val = build_digit(yi, xi)
@@ -67,7 +67,7 @@ def day_3b_helper(data: list[str], y, x: int) -> int:
 def day_5_parse_mapping(mapping: str) -> Tuple[dict, dict]:
     ranges, keys = {}, {}
     for entry in mapping.split('\n')[1:]:
-        dest, src, range_ = (int(i) for i in entry.split(' '))
+        dest, src, range_ = map(int, entry.split())
         ranges[range(src, src + range_)] = range(dest, dest + range_)
         keys[src] = range(src, src + range_)
     return keys, ranges
@@ -107,8 +107,7 @@ def _get_hand_type(cards: str, part: str) -> int:
     wild_cards_offset = cards.count('J') * (not part.upper() == 'A')
     cards = cards if part.upper() == 'A' else cards.replace('J', '')
 
-    counts = sorted((count for count in Counter(cards).values()),
-                    key=lambda x: -x)
+    counts = sorted((count for count in Counter(cards).values()), reverse=True)
 
     if wild_cards_offset == 5 or counts[0] + wild_cards_offset == 5:
         return 0
@@ -196,7 +195,7 @@ def get_is_enclosed(perim: Set[Tuple[int, int]],
         if (y, x) in perim:
             return 0
         y2, x2, cross_count = y, x, 0
-        while is_in_bounds(y2, x2, pipes):
+        while is_inbounds(y2, x2, pipes):
             cross_count += (y2, x2) in perim and pipes[y2][x2] not in 'L7'
             y2 += 1
             x2 += 1
@@ -352,7 +351,7 @@ def light_traversal(lights: List[str], start_y=0, start_x=0, starting_dir='>'):
             light.increment_location()
             y, x = light.location
             if (y, x, light.direction) in visited or \
-                    not is_in_bounds(y, x, lights):
+                    not is_inbounds(y, x, lights):
                 continue
             visited.add((y, x, light.direction))
             a, b = get_light_dirs(y, x, light.direction)
