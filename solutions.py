@@ -4,7 +4,7 @@ import sys
 from ast import Tuple
 
 from santas_bag.constants import NUMBER_WORDS, WORD_TO_DIGIT
-from santas_bag.grid import find_all_in_grid, Grid
+from santas_bag.grid import find_all_in_grid, Grid, get_is_enclosed
 from santas_bag.search import dfs
 from santas_bag.utils import get_read_input, time_execution
 
@@ -41,7 +41,7 @@ def day_10(part_1=True) -> int:
             return ys, xs - 1, (0, -1)
         return None
 
-    pipes = read_input(day=10)
+    pipes = read_input(day=10, parse=lambda ln: list(ln))
     pipe_directions = {
         '|': {(1, 0), (-1, 0)}, '-': {(0, 1), (0, -1)}, 'L': {(0, -1), (1, 0)},
         'J': {(0, 1), (1, 0)}, '7': {(0, 1), (-1, 0)}, 'F': {(0, -1), (-1, 0)}
@@ -51,9 +51,7 @@ def day_10(part_1=True) -> int:
         y, x, delta = node
         incs1, incs2 = pipe_directions[space[y][x]]
         yi, xi = incs2 if incs1 == delta else incs1
-        yi = -yi
-        xi = -xi
-        yield y + yi, x + xi, (yi, xi)
+        yield y - yi, x - xi, (-yi, -xi)
 
 
     perimeter = set()
@@ -63,11 +61,16 @@ def day_10(part_1=True) -> int:
         pipes,
         lambda n, _, *args, **kwargs: (n[0], n[1]) == start_pos,
         get_neighbors,
-        on_visit=lambda n, steps, s: perimeter.add((n[0], n[1])))
+        on_visit=lambda n, steps, s: perimeter.add((n[0], n[1]))
+    )
 
     if part_1:
         return len(perimeter) // 2
-    return NotImplemented
+
+    ys, xs = start_pos
+    pipes[ys][xs] = '|'
+    enclosed = get_is_enclosed(pipes, perimeter)
+    return sum(enclosed(y, x) for y in range(len(pipes)) for x in range(len(pipes[y])))
 
 
 if __name__ == '__main__':
