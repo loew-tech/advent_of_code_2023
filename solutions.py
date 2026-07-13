@@ -1,12 +1,11 @@
 import inspect
 import re
 import sys
-from ast import Tuple
 
 from santas_bag.constants import NUMBER_WORDS, WORD_TO_DIGIT
-from santas_bag.grid import find_all_in_grid, Grid, get_is_enclosed
+from santas_bag.grid import find_all_in_grid, get_is_enclosed
 from santas_bag.search import dfs
-from santas_bag.utils import get_read_input, time_execution, get_naughty_or_nice
+from santas_bag.utils import get_read_input, get_naughty_or_nice, get_read_and_solve, get_solve
 
 with open('.env') as f:
     session_ = f.readlines()[0]
@@ -15,10 +14,8 @@ read_input = get_read_input(2023, session_)
 naughty_or_nice = get_naughty_or_nice(year=2023, session_id=session_)
 
 
-@naughty_or_nice(day=1)
 def day_1(part=1, testing=True) -> int:
     pattern = r'\d' if part == 1 else '(?=(' + '|'.join([r'\d', *NUMBER_WORDS]) + '))'
-    print(pattern)
 
     conversion_dict = {
         **WORD_TO_DIGIT,
@@ -31,9 +28,7 @@ def day_1(part=1, testing=True) -> int:
 
 
 
-@naughty_or_nice(day=10)
 def day_10(part=1, testing=True) -> int:
-    print(testing)
     def get_first_move(ys_, xs_: int):
         if ys_ + 1 < len(pipes) and pipes[ys_ + 1][xs_] in '|JL':
             return ys_ + 1, xs_, (1, 0)
@@ -78,20 +73,39 @@ def day_10(part=1, testing=True) -> int:
     return sum(enclosed(y, x) for y in range(len(pipes)) for x in range(len(pipes[y])))
 
 
-@naughty_or_nice(day=11)
 def day_11(part=1, testing=True) -> int:
     data = read_input(11, testing=testing, part=part)
 
 
 if __name__ == '__main__':
-    args_ = sys.argv[1:] if sys.argv[1:] else range(1, 26)
+    testing_ = '-t' in sys.argv[1:] or '-testing' in sys.argv[1:]
+    print(f'{testing_=}')
+    sys_args = [int(i) for i in sys.argv[1:] if i.isnumeric()]
+    args_ = sys_args if sys_args else range(1, 26)
+
     members = inspect.getmembers(inspect.getmodule(inspect.currentframe()))
     funcs = {name: member for name, member in members
              if inspect.isfunction(member)}
+
+    solve = get_solve(2023, session_)
     for i in args_:
         day = f'day_{i}'
         if day not in funcs:
             print(f'{day}() = NotImplemented')
             continue
-        print(f'{day}() = {funcs[day](part=1, testing=True)}')
-        print(f'{day}(part=2) = {funcs[day](part=2, testing=True)}\n')
+
+        def part_1(testing=testing_):
+            return funcs[day](part=1, testing=testing)
+
+        def part_2():
+            return funcs[day](part=2)
+
+        print(f'\n===day_{i}===')
+        res1, res2 = solve(i,
+                           part_1,
+                           part_2,
+                           testing=testing_)
+        print(f'{day}() = {res1}')
+        print(f'{day}(part=2) = {res2}')
+        # print(f'{day}() = {funcs[day](part=1, testing=True)}')
+        # print(f'{day}(part=2) = {funcs[day](part=2, testing=True)}\n')
