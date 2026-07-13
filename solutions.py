@@ -1,9 +1,11 @@
 import inspect
 import re
 import sys
+from collections import defaultdict
 
 from santas_bag.constants import NUMBER_WORDS, WORD_TO_DIGIT
 from santas_bag.grid import find_all_in_grid, get_is_enclosed
+from santas_bag.parse import ints
 from santas_bag.search import dfs
 from santas_bag.utils import get_read_input, get_naughty_or_nice, get_read_and_solve, get_solve
 
@@ -25,6 +27,27 @@ def day_1(part=1, testing=True) -> int:
     return sum(int(f'{conversion_dict[re.findall(pattern, line)[0]]}'
                    f'{conversion_dict[re.findall(pattern, line)[-1]]}') for
                line in read_input(day=1, testing=testing, part=part))
+
+
+def day_2(part=1, testing=True) -> int:
+    games = defaultdict(lambda: defaultdict(int))
+    def parse(ln: str):
+        game_str, marbles_ = ln.split(':')
+        game = ints(game_str)[0]
+        trials = tuple(val.split(' ') for val in marbles_[1:].split('; '))
+        for t in trials:
+            for i in range(0, len(t), 2):
+                val, marble = int(t[i]), t[i + 1].replace(',', '')
+                games[game][marble] = max(games[game][marble], val)
+
+    read_input(day=2, testing=testing, parse=parse)
+    truth = {'red': 12, 'green': 13, 'blue': 14}
+
+    def compare(marbles_: dict) -> bool:
+        return not any(truth[k_] < v for k_, v in marbles_.items())
+
+    return sum(k for k, marbles in games.items() if compare(marbles))
+
 
 
 
