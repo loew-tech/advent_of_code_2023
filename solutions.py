@@ -2,6 +2,8 @@ import inspect
 import re
 import sys
 from collections import defaultdict
+from functools import reduce
+from operator import mul
 
 from santas_bag.constants import NUMBER_WORDS, WORD_TO_DIGIT
 from santas_bag.grid import find_all_in_grid, get_is_enclosed
@@ -46,7 +48,9 @@ def day_2(part=1, testing=True) -> int:
     def compare(marbles_: dict) -> bool:
         return not any(truth[k_] < v for k_, v in marbles_.items())
 
-    return sum(k for k, marbles in games.items() if compare(marbles))
+    if part == 1:
+        return sum(k for k, marbles in games.items() if compare(marbles))
+    return sum(reduce(mul, marbles.values(), 1) for marbles in games.values())
 
 
 
@@ -120,8 +124,8 @@ if __name__ == '__main__':
         def part_1(testing=testing_):
             return funcs[day](part=1, testing=testing)
 
-        def part_2():
-            return funcs[day](part=2)
+        def part_2(testing=testing_):
+            return funcs[day](part=2, testing=testing)
 
         print(f'\n===day_{i}===')
         res1, res2 = solve(i,
